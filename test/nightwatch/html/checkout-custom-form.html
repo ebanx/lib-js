@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EBANX | Checkout - Custom form</title>
+    <script type="text/javascript">
+        setCountry = function(){
+            var countryElement = document.getElementById('country-abbreviation');
+            Ebanx.setCountry(countryElement.value.trim());
+            Ebanx.
+            console.log(Ebanx.getCountry());
+        }
+    </script>
+</head>
+<body>
+    <h1>DEMO</h1>
+    <p>Checkout | Custom form</p>
+
+    <!-- Your checkout/compliance form -->
+    <form>
+        <!-- REQUIRED COUNTRY FIELD -->
+        <label>Country</label>
+        <input type="text" id="country-abbreviation" required="required"><br/>
+
+        <input type="button" id="btn-save-customer-data" onclick="setCountry()" value="save">
+    </form>
+
+    <!-- CREDIT CARD COMPLIANCE FIELDS -->
+    <div data-ebanx="credit-card-container" style="display: none;">
+        <label>Instalments</label>
+        <input type="number" data-ebanx="credit-card[instalments]"><br/>
+
+        <h3>Card Data</h3>
+
+        <label>Card Number</label>
+        <input type="text" data-ebanx="credit-card[number]"><br/>
+
+        <label>Card Name</label>
+        <input type="text" data-ebanx="credit-card[name]"><br/>
+
+        <label>Card Due Date</label>
+        <input type="text" data-ebanx="credit-card[due-date]"><br/>
+
+        <label>Card CVV</label>
+        <input type="text" data-ebanx="credit-card[cvv]"><br/>
+
+        <input type="hidden" data-ebanx="credit-card[auto-capture]">
+
+        <!-- ANOTHER PAYMENT METHOD COMPLIANCE FIELDS -->
+        <!-- ... -->
+
+        <input type="submit" value="Buy now"/>
+    </div>
+
+    <script type="text/javascript" src="http://127.0.0.1:54170/ebanx.js"></script>
+    <script type="text/javascript">
+        Ebanx.setPublicKey(1231000);
+    </script>
+</body>
+</html>

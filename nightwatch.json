@@ -1,0 +1,23 @@
+{
+  "selenium": {
+    "start_process" : true,
+    "server_path" : "test/nightwatch/bin/selenium-server-standalone-2.53.0.jar"
+  },
+  "src_folders": ["test/nightwatch/"],
+  "output_folder": "test/nightwatch/reports",
+  "test_settings": {
+    "test" : {
+      "silent": true,
+      "selenium_host" : "127.0.0.1",
+      "selenium_port" : 4444,
+      "output" : true,
+      "screenshots" : {
+        "enabled" : true,
+        "path" : "test/nightwatch/screenshots"
+      },
+      "desiredCapabilities": {
+        "browserName": "firefox"
+      }
+    }
+  }
+}

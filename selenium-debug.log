@@ -1,0 +1,88 @@
+12:00:37.209 INFO - Launching a standalone Selenium Server
+12:00:37.256 INFO - Java: Oracle Corporation 25.91-b14
+12:00:37.257 INFO - OS: Mac OS X 10.11.6 x86_64
+12:00:37.279 INFO - v2.53.0, with Core v2.53.0. Built from revision 35ae25b
+12:00:37.363 INFO - Driver provider org.openqa.selenium.ie.InternetExplorerDriver registration is skipped:
+registration capabilities Capabilities [{ensureCleanSession=true, browserName=internet explorer, version=, platform=WINDOWS}] does not match the current platform MAC
+12:00:37.364 INFO - Driver provider org.openqa.selenium.edge.EdgeDriver registration is skipped:
+registration capabilities Capabilities [{browserName=MicrosoftEdge, version=, platform=WINDOWS}] does not match the current platform MAC
+12:00:37.364 INFO - Driver class not found: com.opera.core.systems.OperaDriver
+12:00:37.364 INFO - Driver provider com.opera.core.systems.OperaDriver is not registered
+12:00:37.367 INFO - Driver class not found: org.openqa.selenium.htmlunit.HtmlUnitDriver
+12:00:37.367 INFO - Driver provider org.openqa.selenium.htmlunit.HtmlUnitDriver is not registered
+12:00:37.465 INFO - RemoteWebDriver instances should connect to: http://127.0.0.1:4444/wd/hub
+12:00:37.465 INFO - Selenium Server is up and running
+12:00:37.762 INFO - Executing: [new session: Capabilities [{acceptSslCerts=true, name=Checkout, browserName=firefox, javascriptEnabled=true, platform=ANY}]])
+12:00:37.777 INFO - Creating a new session for Capabilities [{acceptSslCerts=true, name=Checkout, browserName=firefox, javascriptEnabled=true, platform=ANY}]
+12:00:40.980 INFO - Done: [new session: Capabilities [{acceptSslCerts=true, name=Checkout, browserName=firefox, javascriptEnabled=true, platform=ANY}]]
+12:00:40.994 INFO - Executing: [maximise window])
+12:00:41.534 INFO - Done: [maximise window]
+12:00:41.544 INFO - Executing: [get: http://127.0.0.1:8080/checkout-custom-form.html])
+12:00:41.743 INFO - Done: [get: http://127.0.0.1:8080/checkout-custom-form.html]
+12:00:41.764 INFO - Executing: [get title])
+12:00:41.797 INFO - Done: [get title]
+12:00:41.817 INFO - Executing: [find element: By.cssSelector: input#country-abbreviation])
+12:00:41.882 INFO - Done: [find element: By.cssSelector: input#country-abbreviation]
+12:00:41.902 INFO - Executing: [is displayed: 0 [[FirefoxDriver: firefox on MAC (df40ceb2-c0e7-fd4d-a977-69a748238932)] -> css selector: input#country-abbreviation]])
+12:00:41.918 INFO - Done: [is displayed: 0 [[FirefoxDriver: firefox on MAC (df40ceb2-c0e7-fd4d-a977-69a748238932)] -> css selector: input#country-abbreviation]]
+12:00:41.923 INFO - Executing: [find element: By.cssSelector: input#country-abbreviation])
+12:00:41.930 INFO - Done: [find element: By.cssSelector: input#country-abbreviation]
+12:00:41.935 INFO - Executing: [send keys: 0 [[FirefoxDriver: firefox on MAC (df40ceb2-c0e7-fd4d-a977-69a748238932)] -> css selector: input#country-abbreviation], [B, R]])
+12:00:41.974 INFO - Done: [send keys: 0 [[FirefoxDriver: firefox on MAC (df40ceb2-c0e7-fd4d-a977-69a748238932)] -> css selector: input#country-abbreviation], [B, R]]
+12:00:41.983 INFO - Executing: [find element: By.cssSelector: div[data-ebanx="credit-card-container"]])
+12:00:41.993 INFO - Done: [find element: By.cssSelector: div[data-ebanx="credit-card-container"]]
+12:00:41.996 INFO - Executing: [is displayed: 1 [[FirefoxDriver: firefox on MAC (df40ceb2-c0e7-fd4d-a977-69a748238932)] -> css selector: div[data-ebanx="credit-card-container"]]])
+12:00:42.016 INFO - Done: [is displayed: 1 [[FirefoxDriver: firefox on MAC (df40ceb2-c0e7-fd4d-a977-69a748238932)] -> css selector: div[data-ebanx="credit-card-container"]]]
+12:00:42.021 INFO - Executing: [find element: By.cssSelector: button#btn-save-customer-data])
+12:00:43.823 WARN - Exception thrown
+org.openqa.selenium.NoSuchElementException: Unable to locate element: {"method":"css selector","selector":"button#btn-save-customer-data"}
+Command duration or timeout: 26 milliseconds
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '2.53.0', revision: '35ae25b', time: '2016-03-15 17:00:58'
+System info: host: 'Mikhaels-MacBook-Pro.local', ip: '10.100.105.181', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '10.11.6', java.version: '1.8.0_91'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Capabilities [{applicationCacheEnabled=true, rotatable=false, handlesAlerts=true, databaseEnabled=true, version=46.0, platform=MAC, nativeEvents=false, acceptSslCerts=true, webStorageEnabled=true, locationContextEnabled=true, browserName=firefox, takesScreenshot=true, javascriptEnabled=true, cssSelectorsEnabled=true}]
+Session ID: df40ceb2-c0e7-fd4d-a977-69a748238932
+*** Element info: {Using=css selector, value=button#btn-save-customer-data}
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:206)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:158)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:678)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:363)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElementByCssSelector(RemoteWebDriver.java:492)
+	at org.openqa.selenium.By$ByCssSelector.findElement(By.java:430)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:355)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.openqa.selenium.support.events.EventFiringWebDriver$2.invoke(EventFiringWebDriver.java:103)
+	at com.sun.proxy.$Proxy1.findElement(Unknown Source)
+	at org.openqa.selenium.support.events.EventFiringWebDriver.findElement(EventFiringWebDriver.java:188)
+	at org.openqa.selenium.remote.server.handler.FindElement.call(FindElement.java:48)
+	at org.openqa.selenium.remote.server.handler.FindElement.call(FindElement.java:1)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:176)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: org.openqa.selenium.NoSuchElementException: Unable to locate element: {"method":"css selector","selector":"button#btn-save-customer-data"}
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '2.53.0', revision: '35ae25b', time: '2016-03-15 17:00:58'
+System info: host: 'Mikhaels-MacBook-Pro.local', ip: '10.100.105.181', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '10.11.6', java.version: '1.8.0_91'
+Driver info: driver.version: unknown
+	at <anonymous class>.FirefoxDriver.prototype.findElementInternal_(file:///var/folders/nq/j3z5k79975n0lxwm_ngm4llh0000gp/T/anonymous3177129040085729697webdriver-profile/extensions/fxdriver@googlecode.com/components/driver-component.js:10770)
+	at <anonymous class>.FirefoxDriver.prototype.findElement(file:///var/folders/nq/j3z5k79975n0lxwm_ngm4llh0000gp/T/anonymous3177129040085729697webdriver-profile/extensions/fxdriver@googlecode.com/components/driver-component.js:10779)
+	at <anonymous class>.DelayedCommand.prototype.executeInternal_/h(file:///var/folders/nq/j3z5k79975n0lxwm_ngm4llh0000gp/T/anonymous3177129040085729697webdriver-profile/extensions/fxdriver@googlecode.com/components/command-processor.js:12661)
+	at <anonymous class>.DelayedCommand.prototype.executeInternal_(file:///var/folders/nq/j3z5k79975n0lxwm_ngm4llh0000gp/T/anonymous3177129040085729697webdriver-profile/extensions/fxdriver@googlecode.com/components/command-processor.js:12666)
+	at <anonymous class>.DelayedCommand.prototype.execute/<(file:///var/folders/nq/j3z5k79975n0lxwm_ngm4llh0000gp/T/anonymous3177129040085729697webdriver-profile/extensions/fxdriver@googlecode.com/components/command-processor.js:12608)
+12:00:43.830 WARN - Exception: Unable to locate element: {"method":"css selector","selector":"button#btn-save-customer-data"}
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: '2.53.0', revision: '35ae25b', time: '2016-03-15 17:00:58'
+System info: host: 'Mikhaels-MacBook-Pro.local', ip: '10.100.105.181', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '10.11.6', java.version: '1.8.0_91'
+Driver info: driver.version: unknown
+12:00:43.899 INFO - Executing: [delete session: 5bf7c125-a1af-4138-8483-59c058f596f9])
+12:00:43.998 INFO - Done: [delete session: 5bf7c125-a1af-4138-8483-59c058f596f9]
