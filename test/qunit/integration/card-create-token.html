@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.0.1.css">
+    <script src="https://code.jquery.com/qunit/qunit-2.0.1.js"></script>
+    <script src="http://127.0.0.1:8080/ebanx.js"></script>
+</head>
+<body>
+<script>
+    QUnit.module( "Ebanx ~> Card" );
+
+    QUnit.test( "hello test", function( assert ) {
+        var done = assert.async();
+
+        var createTokenCallback = function (resp) {
+            console.log(JSON.stringify(resp));
+            done();
+        };
+
+        Ebanx.config.setPublishableKey(1231000);
+
+        Ebanx.card.createToken({
+            card_number: 4111111111111111,
+            card_name: "Justin Bieber",
+            card_due_date: "12/2222",
+            card_cvv: 123
+        }, createTokenCallback);
+    });
+</script>
+</body>
+</html>
