@@ -7,10 +7,15 @@ describe( 'Ebanx', function() {
     describe( '~Unit~', function() {
         describe( 'Config', function() {
             describe( 'publishableKey', function() {
+                it( 'getEmptyPublishableKey', function() {
+                    (function(){
+                        Ebanx.config.getPublishableKey();
+                    }).should.throw();
+                });
                 it( 'can', function() {
                     Ebanx.config.setPublishableKey(1231000);
                     Ebanx.config.getPublishableKey()
-                        .should.equal(1231000)
+                        .should.equal('1231000');
                     ;
                 });
                 it( 'invalid', function() {

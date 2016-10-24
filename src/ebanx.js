@@ -7,7 +7,8 @@ const Ebanx = (function () {
 
     const $public = {};
     const _private = {
-        mode: 'test'
+        mode: 'test',
+        publicKey: ''
     };
 
     $public.config = (function() {
@@ -15,10 +16,12 @@ const Ebanx = (function () {
             isLive: (_private.mode === 'production'),
             setPublishableKey: function (key) {
                 Ebanx.validator.config.validatePublishableKey(key);
-                _private.publicKey = key;
+                _private.publicKey = String(key);
             },
             getPublishableKey: function () {
-                // TODO: valid if not empty
+                if (_private.publicKey.trim() === '')
+                  throw new Ebanx.errors.InvalidConfiguration('Missing publishable key. You need set publishable key using the method Ebanx.config.setPublishableKey.', 'publicKey');
+
                 return _private.publicKey;
             }
         };
@@ -29,10 +32,15 @@ const Ebanx = (function () {
 
 Ebanx.errors = (function () {
     return {
-        invalidValueField: function (message, field) {
+        InvalidValueField: function (message, field) {
             this.message = message;
             this.field = field;
-            this.name = "invalidValueField";
+            this.name = "InvalidValueField";
+        },
+        InvalidConfiguration: function (message, config) {
+          this.message = message;
+          this.invalidConfiguration = config;
+          this.name = 'InvalidConfiguration';
         }
     };
 })();
@@ -50,7 +58,7 @@ Ebanx.validator = (function () {
                 // @TODO how make this?
                 var regex = new RegExp("^[0-9]{7}$");
                 if (!regex.test(key))
-                    throw new Ebanx.errors.invalidValueField('Invalid PublishableKey.', 'PublishableKey');
+                    throw new Ebanx.errors.InvalidValueField('Invalid PublishableKey.', 'PublishableKey');
             }
         },
 
@@ -65,14 +73,14 @@ Ebanx.validator = (function () {
              *
              * @function validateNumber - validate a card number
              * @param {number} number - Number of card to validate.
-             * @throws {Ebanx.errors.invalidValueField} case card number is not valid
+             * @throws {Ebanx.errors.InvalidValueField} case card number is not valid
              *
              * @return {void}
              */
             validateNumber: function (number) {
                 var regex = new RegExp("^[0-9]{16}$");
                 if (!regex.test(number) || !this.luhnAlgCheck(number))
-                    throw new Ebanx.errors.invalidValueField('Invalid card number.', 'card_number');
+                    throw new Ebanx.errors.InvalidValueField('Invalid card number.', 'card_number');
             },
             /**
              *
@@ -101,22 +109,22 @@ Ebanx.validator = (function () {
              *
              * @function validateCvv - validate a card cvv
              * @param {number} cvv - Cvv of card to validate.
-             * @throws {Ebanx.errors.invalidValueField} case card cvv is not valid
+             * @throws {Ebanx.errors.InvalidValueField} case card cvv is not valid
              *
              * @return {void}
              */
             validateCvv: function (cvv) {
                 var regex = new RegExp("^[0-9]{3}$");
                 if (!regex.test(cvv))
-                    throw new Ebanx.errors.invalidValueField('Invalid card cvv.', 'card_cvv');
+                    throw new Ebanx.errors.InvalidValueField('Invalid card cvv.', 'card_cvv');
             },
             /**
              *
              * @function validateDueDate - validate a card due date
              * @param {string} dueDate - Due date of card to validate.
-             * @throws {Ebanx.errors.invalidValueField} case card due date is not valid
-             * @throws {Ebanx.errors.invalidValueField} case card due date year is not valid
-             * @throws {Ebanx.errors.invalidValueField} case card due date month is not valid
+             * @throws {Ebanx.errors.InvalidValueField} case card due date is not valid
+             * @throws {Ebanx.errors.InvalidValueField} case card due date year is not valid
+             * @throws {Ebanx.errors.InvalidValueField} case card due date month is not valid
              *
              * @return {void}
              */
@@ -130,10 +138,10 @@ Ebanx.validator = (function () {
                 };
 
                 if (((/^\d+$/).test(date.month)) !== true || (parseInt(date.month, 10) <= 12) !== true) {
-                    throw new Ebanx.errors.invalidValueField('Invalid month to card due_date.', 'card_due_date');
+                    throw new Ebanx.errors.InvalidValueField('Invalid month to card due_date.', 'card_due_date');
                 }
                 if (!(/^\d+$/).test(date.year)) {
-                    throw new Ebanx.errors.invalidValueField('Invalid year to card due_date.', 'card_due_date');
+                    throw new Ebanx.errors.InvalidValueField('Invalid year to card due_date.', 'card_due_date');
                 }
 
                 date.expiration = new Date(date.year, date.month);
@@ -142,7 +150,7 @@ Ebanx.validator = (function () {
                 date.expiration.setMonth(date.expiration.getMonth() + 1, 1);
 
                 if ((date.expiration > date.now) !== true) {
-                    throw new Ebanx.errors.invalidValueField('Invalid card due_date.', 'card_due_date');
+                    throw new Ebanx.errors.InvalidValueField('Invalid card due_date.', 'card_due_date');
                 }
             },
             /**
@@ -357,7 +365,7 @@ Ebanx.card = (function () {
                 createTokenCallback(response);
             });
         } catch (e) {
-            if (e instanceof Ebanx.errors.invalidValueField) {
+            if (e instanceof Ebanx.errors.InvalidValueField) {
                 // TODO: i18n
             }
             response.error.err = e;
