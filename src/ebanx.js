@@ -361,7 +361,11 @@ Ebanx.card = (function () {
                 // TODO: i18n
             }
             response.error.err = e;
+            // TODO: Remove this
+
+            return createTokenCallback(response);
         }
+        // TODO: How make this ?
         // finally {
         //     return createTokenCallback(response);
         // }

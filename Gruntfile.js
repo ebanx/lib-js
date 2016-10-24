@@ -44,6 +44,12 @@ module.exports = function(grunt) {
         ]
       }
     },
+    jshint: {
+        files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+        options: {
+          jshintrc: true
+        }
+    },
     // watch: {
     //   files: ['<%= jshint.files %>'],
     //   tasks: ['webpack', 'jshint']
@@ -52,9 +58,8 @@ module.exports = function(grunt) {
       all: {
         options: {
           urls: [
-            'http://localhost:8000/card-create-token.html'
-          ],
-          all: ['test/qunit/integration/*.html']
+            'http://localhost:8000/test/qunit/integration/card/create-token.html'
+          ]
         }
       }
     },
@@ -62,7 +67,7 @@ module.exports = function(grunt) {
       server: {
         options: {
           port: 8000,
-          base: 'test/qunit/integration/'
+          base: '.'
         }
       }
     }
@@ -76,6 +81,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
 
   grunt.registerTask('doc', ['jsdoc']);
-  grunt.registerTask('default', ['webpack']);
-  grunt.registerTask('test', ['webpack', 'connect', 'qunit']);
+  grunt.registerTask('test', ['connect', 'qunit']);
+  grunt.registerTask('default', ['webpack', 'connect', 'qunit']);
 };

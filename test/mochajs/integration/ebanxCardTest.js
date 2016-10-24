@@ -35,6 +35,7 @@ describe( 'Ebanx', function() {
             describe( 'createToken', function() {
                 it( 'can', function() {
                     var createTokenCallback = function(ebanxResponse) {
+                        console.log("ebanxResponse", ebanxResponse);
                         (ebanxResponse.error)
                             .should.be.an.Object()
                             .and
