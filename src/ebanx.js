@@ -25,6 +25,10 @@ const Ebanx = (function () {
         };
     })();
 
+    if ($public.config.isLive && location.protocol !== 'https:') {
+      throw 'EbanxInvalidConfigurationError: Your protocol needs to be https.';
+    }
+
     return $public;
 })();
 
