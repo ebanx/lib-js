@@ -216,16 +216,11 @@ Ebanx.tokenize = (function () {
                     }
                 })
                 .always(function(result) {
-                  console.log(JSON.stringify(result));
-                  // TODO
-                  if (result.status === 'SUCESS' && 'token' in result) {
-                    console.log('SUCESS');
-                  }
-                  else if (result.status === 'ERROR') {
-                    console.log('ERROR');
+                  if (result.status === 'ERROR' || !('token' in result)) {
+                    console.log('ERRO');
                   }
 
-                  cb(result.body);
+                  cb(result);
                 });
             }
         }
@@ -294,35 +289,34 @@ Ebanx.http = (function () {
                         }
 
                         if(this.xhr) {
-                            this.xhr.onreadystatechange = function() {
-                              var result = self.xhr.responseText;
+                          this.xhr.onreadystatechange = function() {
+                            if(self.xhr.readyState == 4) {
+                              var result = self.xhr.responseText || '{}';
 
-                              if(ops.json === true && typeof JSON != 'undefined') {
-                                  result = JSON.parse(result);
+                              if(ops.json === true && typeof JSON !== 'undefined') {
+                                result = JSON.parse(result);
                               }
 
-                              if(self.xhr.readyState == 4 && self.xhr.status == 200) {
+                              if(self.xhr.status == 200) {
                                   self.doneCallback && self.doneCallback.apply(self.host, [result, self.xhr]);
-                              } else if(self.xhr.readyState == 4) {
+                              } else {
                                   self.failCallback && self.failCallback.apply(self.host, [result, self.xhr]);
                               }
 
                               self.alwaysCallback && self.alwaysCallback.apply(self.host, [result, self.xhr]);
-                            };
+                            }
+                          };
                         }
 
-                        let url = `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`;
-
-                        if (ops.method.toLowerCase() !== 'get') {
-                          url = ops.url;
-
-                          this.setHeaders({
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Content-type': 'application/x-www-form-urlencoded'
-                          });
+                        if(ops.method.toLowerCase() === 'get') {
+                            this.xhr.open("GET", `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`, true);
+                        } else {
+                            this.xhr.open(ops.method.toUpperCase(), ops.url, true);
+                            this.setHeaders({
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-type': 'application/x-www-form-urlencoded'
+                            });
                         }
-
-                        this.xhr.open(ops.method.toUpperCase(), url, true);
 
                         if(ops.headers && typeof ops.headers == 'object') {
                             this.setHeaders(ops.headers);
@@ -398,29 +392,25 @@ Ebanx.card = (function () {
         // provider.construct() ?;
 
         const response = {
-            token: {},
+            data: {},
             error: {}
         };
 
         try {
             Ebanx.validator.card.validate(cardData);
             Ebanx.tokenize.card.token(cardData, function (resp) {
-                response.token = resp;
-                createTokenCallback(response);
+              response.data = resp;
+              createTokenCallback(response);
             });
         } catch (e) {
-            if (e instanceof Ebanx.errors.InvalidValueFieldError) {
-                // TODO: i18n
-            }
-            response.error.err = e;
-            // TODO: Remove this
+          if (e instanceof Ebanx.errors.InvalidValueFieldError) {
+              // TODO: i18n
+          }
+          response.error.err = e;
+          // TODO: Remove this
 
-            return createTokenCallback(response);
+          createTokenCallback(response);
         }
-        // TODO: How make this ?
-        // finally {
-        //     return createTokenCallback(response);
-        // }
     };
 
     return $public;

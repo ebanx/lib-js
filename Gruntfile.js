@@ -59,7 +59,8 @@ module.exports = function(grunt) {
         options: {
           urls: [
             'http://localhost:8000/test/qunit/integration/card/create-token.html'
-          ]
+          ],
+          timeout: 20000
         }
       }
     },
