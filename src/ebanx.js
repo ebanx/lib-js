@@ -3,8 +3,6 @@
  * @global
  */
 const Ebanx = (function () {
-    "use strict";
-
     const $public = {};
     const _private = {
         mode: 'test',
@@ -65,7 +63,6 @@ Ebanx.validator = (function () {
                     throw new Ebanx.errors.InvalidValueFieldError('Invalid PublishableKey.', 'PublishableKey');
             }
         },
-
         /**
          * Card object validator in Ebanx/validator~card.
          *
@@ -165,14 +162,30 @@ Ebanx.validator = (function () {
              * @param {string} cardData.card_name     - Name of card.
              * @param {string} cardData.card_due_date - Due date of card (format: MM/YYYY).
              * @param {number} cardData.card_cvv      - Cvv of card.
+             * @param {string} cardData.country       - Customer country
              *
              * @return {void}
              */
             validate: function (cardData) {
-                this.validateCvv(cardData.card_cvv);
-                this.validateNumber(cardData.card_number);
-                this.validateDueDate(cardData.card_due_date);
+              this.validateCvv(cardData.card_cvv);
+              this.validateNumber(cardData.card_number);
+              this.validateDueDate(cardData.card_due_date);
+              Ebanx.validator.customer.validateCountry(cardData.country);
             }
+        },
+        customer: {
+          /**
+           *
+           * @function validateCountry - validate the customer country
+           * @param {string} country - Customer country to validate
+           * @throws {Ebanx.errors.InvalidValueFieldError} case country is not valid
+           *
+           * @return {void}
+           */
+          validateCountry: function (country) {
+            if (Ebanx.utils.availableCountries.indexOf(country) === -1)
+              throw new Ebanx.errors.InvalidValueFieldError(`Invalid customer country. You can use one of them: ${Ebanx.utils.availableCountries}.`, 'country');
+          }
         }
     };
 })();
@@ -183,26 +196,35 @@ Ebanx.tokenize = (function () {
             token: function (cardData, cb) {
                 const tokenResource = Ebanx.utils.api.resources.createToken;
 
+                // TODO: Finalizar response do tokenize junto do pay
+
                 Ebanx.http.ajax.request({
                     url: tokenResource.url,
                     method: tokenResource.method,
                     json: true,
-                    data: cardData
+                    data: {
+                      payment_type_code: 'visa',
+                      country: cardData.country,
+                      card: cardData
+                    },
+                    headers: {
+                      'Content-type': 'application/json'
+                    }
                 })
-                .done(function(result) {
-                    cb(result.body);
-                })
-                .fail(function(err) {
+                .always(function(result) {
+                  console.log(JSON.stringify(result));
                   // TODO
-                  console.log(err);
+                  if (result.status === 'SUCESS' && 'token' in result) {
+                    console.log('SUCESS');
+                  }
+                  else if (result.status === 'ERROR') {
+                    console.log('ERROR');
+                  }
 
-                  throw new ResponseError({
-                    message: ''
-                  });
+                  cb(result.body);
                 });
             }
-        },
-        boleto: {}
+        }
     };
 })();
 
@@ -214,14 +236,15 @@ Ebanx.tokenize = (function () {
 Ebanx.utils = (function () {
     const utilsModule = {
         api: {
-            url: (Ebanx.config.isLive ? 'http://dev-pay.ebanx.com/ws/merchantSettlement/' : 'http://dev-pay.ebanx.com/ws/merchantSettlement/')
-        }
+            url: (Ebanx.config.isLive ? 'http://dev-pay.ebanx.com/ws' : 'http://dev-pay.ebanx.com/ws')
+        },
+        availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', ')
     };
 
     utilsModule.api.resources = {
         createToken: {
-            url: utilsModule.api.url + 'getExtract',
-                method: 'post'
+            url: `${utilsModule.api.url}/token`,
+            method: 'post'
         }
     };
 
@@ -251,6 +274,7 @@ Ebanx.http = (function () {
                 ops.url = ops.url || '';
                 ops.method = ops.method || 'get';
                 ops.data = ops.data || {};
+                ops.data.integration_key = Ebanx.config.getPublishableKey();
 
                 var api = {
                     /* jshint expr: true */
@@ -267,39 +291,42 @@ Ebanx.http = (function () {
 
                         if(this.xhr) {
                             this.xhr.onreadystatechange = function() {
-                                if(self.xhr.readyState == 4 && self.xhr.status == 200) {
-                                    var result = self.xhr.responseText;
-                                    if(ops.json === true && typeof JSON != 'undefined') {
-                                        result = JSON.parse(result);
-                                    }
-                                    self.doneCallback && self.doneCallback.apply(self.host, [result, self.xhr]);
-                                } else if(self.xhr.readyState == 4) {
-                                    self.failCallback && self.failCallback.apply(self.host, [self.xhr]);
-                                }
-                                self.alwaysCallback && self.alwaysCallback.apply(self.host, [self.xhr]);
+                              var result = self.xhr.responseText;
+
+                              if(ops.json === true && typeof JSON != 'undefined') {
+                                  result = JSON.parse(result);
+                              }
+
+                              if(self.xhr.readyState == 4 && self.xhr.status == 200) {
+                                  self.doneCallback && self.doneCallback.apply(self.host, [result, self.xhr]);
+                              } else if(self.xhr.readyState == 4) {
+                                  self.failCallback && self.failCallback.apply(self.host, [result, self.xhr]);
+                              }
+
+                              self.alwaysCallback && self.alwaysCallback.apply(self.host, [result, self.xhr]);
                             };
                         }
 
-                        // TODO: Better this
-                        let url = (ops.method.toLowerCase() === 'get')
-                            ? `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`
-                            : ops.url;
-
-                        this.xhr.open(ops.method.toUpperCase(), url, true);
+                        let url = `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`;
 
                         if (ops.method.toLowerCase() !== 'get') {
+                          url = ops.url;
+
                           this.setHeaders({
                             'X-Requested-With': 'XMLHttpRequest',
                             'Content-type': 'application/x-www-form-urlencoded'
                           });
                         }
 
+                        this.xhr.open(ops.method.toUpperCase(), url, true);
+
                         if(ops.headers && typeof ops.headers == 'object') {
                             this.setHeaders(ops.headers);
                         }
 
                         setTimeout(function() {
-                            ops.method == 'get' ? self.xhr.send() : self.xhr.send(Ebanx.http.normalize.q(ops.data));
+                            // TODO better this
+                            ops.method == 'get' ? self.xhr.send() : self.xhr.send(ops.json ? JSON.stringify(ops.data) : Ebanx.http.normalize.q(ops.data));
                         }, 20);
 
                         return this;
@@ -318,7 +345,7 @@ Ebanx.http = (function () {
                     },
                     setHeaders: function(headers) {
                         for(var name in headers) {
-                            this.xhr && this.xhr.setRequestHeader(name, headers[name]);
+                            this.xhr && this.xhr.setRequestHeader(name.toLowerCase(), headers[name]);
                         }
                     }
                 };
@@ -342,6 +369,7 @@ Ebanx.card = (function () {
      * @param {string} cardData.card_name       - Name of card.
      * @param {string} cardData.card_due_date   - Due date of card (format: MM/YYYY).
      * @param {number} cardData.card_cvv        - Cvv of card.
+     * @param {string} cardData.country         - Customer country
      * @callback {function} createTokenCallback - The callback that handles the response.
      *
      * @example <caption>Example usage of createToken.</caption>
@@ -352,7 +380,8 @@ Ebanx.card = (function () {
          card_number: 4111111111111111,
          card_name: 'Justin Bieber',
          card_due_date: '12/2222',
-         card_cvv: 123
+         card_cvv: 123,
+         country: 'br'
         };
        Ebanx.card.createToken(cardData, createTokenCallback);
      *

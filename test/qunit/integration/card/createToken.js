@@ -9,7 +9,8 @@ var mock = {
             number: 4111111111111111,
             name: "Justin Bieber",
             dueDate: "12/2222",
-            cvv: 123
+            cvv: 123,
+            country: 'br'
         }
     },
     invalid: {
@@ -49,7 +50,8 @@ QUnit.test( "can", function( assert ) {
         card_number: mock.valid.card.number,
         card_name: mock.valid.card.name,
         card_due_date: mock.valid.card.dueDate,
-        card_cvv: mock.valid.card.cvv
+        card_cvv: mock.valid.card.cvv,
+        country: mock.valid.card.country
     }, createTokenCallback);
 });
 
