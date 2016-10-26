@@ -250,6 +250,7 @@ Ebanx.utils = (function () {
     return utilsModule;
 })();
 
+
 Ebanx.http = (function () {
     return {
         normalize: {
@@ -273,7 +274,7 @@ Ebanx.http = (function () {
                 ops.url = ops.url || '';
                 ops.method = ops.method || 'get';
                 ops.data = ops.data || {};
-                ops.data.integration_key = Ebanx.config.getPublishableKey();
+                ops.data.public_integration_key = Ebanx.config.getPublishableKey();
 
                 var api = {
                     /* jshint expr: true */
