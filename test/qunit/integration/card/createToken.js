@@ -47,15 +47,19 @@ QUnit.test( "can", function( assert ) {
       done();
     };
 
-    Ebanx.card.createToken({
-      card_number: mock.valid.card.number,
-      card_name: mock.valid.card.name,
-      card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.valid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+        card_number: mock.valid.card.number,
+        card_name: mock.valid.card.name,
+        card_due_date: mock.valid.card.dueDate,
+        card_cvv: mock.valid.card.cvv,
+        country: mock.valid.country
+      }, createTokenCallback);
+    }, 2000);
 
 });
+
 
 QUnit.test( "invalidCardNumber", function( assert ) {
     assert.expect(7);
@@ -75,13 +79,16 @@ QUnit.test( "invalidCardNumber", function( assert ) {
         done();
     };
 
-    Ebanx.card.createToken({
-        card_number: mock.invalid.card.number,
-        card_name: mock.valid.card.name,
-        card_due_date: mock.valid.card.dueDate,
-        card_cvv: mock.valid.card.cvv,
-        country: mock.valid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+          card_number: mock.invalid.card.number,
+          card_name: mock.valid.card.name,
+          card_due_date: mock.valid.card.dueDate,
+          card_cvv: mock.valid.card.cvv,
+          country: mock.valid.country
+      }, createTokenCallback);
+    }, 2000);
 });
 
 QUnit.test( "invalidCardCvv", function( assert ) {
@@ -102,13 +109,16 @@ QUnit.test( "invalidCardCvv", function( assert ) {
         done();
     };
 
-    Ebanx.card.createToken({
-        card_number: mock.valid.card.number,
-        card_name: mock.valid.card.name,
-        card_due_date: mock.valid.card.dueDate,
-        card_cvv: mock.invalid.card.cvv,
-        country: mock.valid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+          card_number: mock.valid.card.number,
+          card_name: mock.valid.card.name,
+          card_due_date: mock.valid.card.dueDate,
+          card_cvv: mock.invalid.card.cvv,
+          country: mock.valid.country
+      }, createTokenCallback);
+    }, 2000);
 });
 
 QUnit.test( "invalidCardDueDateMonth", function( assert ) {
@@ -129,13 +139,16 @@ QUnit.test( "invalidCardDueDateMonth", function( assert ) {
         done();
     };
 
-    Ebanx.card.createToken({
-        card_number: mock.valid.card.number,
-        card_name: mock.valid.card.name,
-        card_due_date: mock.invalid.card.dueDate.month,
-        card_cvv: mock.valid.card.cvv,
-        country: mock.valid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+          card_number: mock.valid.card.number,
+          card_name: mock.valid.card.name,
+          card_due_date: mock.invalid.card.dueDate.month,
+          card_cvv: mock.valid.card.cvv,
+          country: mock.valid.country
+      }, createTokenCallback);
+    }, 2000);
 });
 
 QUnit.test( "invalidCardDueDateYear", function( assert ) {
@@ -156,13 +169,16 @@ QUnit.test( "invalidCardDueDateYear", function( assert ) {
         done();
     };
 
-    Ebanx.card.createToken({
-        card_number: mock.valid.card.number,
-        card_name: mock.valid.card.name,
-        card_due_date: mock.invalid.card.dueDate.year,
-        card_cvv: mock.valid.card.cvv,
-        country: mock.valid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+          card_number: mock.valid.card.number,
+          card_name: mock.valid.card.name,
+          card_due_date: mock.invalid.card.dueDate.year,
+          card_cvv: mock.valid.card.cvv,
+          country: mock.valid.country
+      }, createTokenCallback);
+    }, 2000);
 });
 
 QUnit.test( "invalidCardDueDate", function( assert ) {
@@ -183,13 +199,16 @@ QUnit.test( "invalidCardDueDate", function( assert ) {
         done();
     };
 
-    Ebanx.card.createToken({
-        card_number: mock.valid.card.number,
-        card_name: mock.valid.card.name,
-        card_due_date: mock.invalid.card.dueDate.date,
-        card_cvv: mock.valid.card.cvv,
-        country: mock.valid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+          card_number: mock.valid.card.number,
+          card_name: mock.valid.card.name,
+          card_due_date: mock.invalid.card.dueDate.date,
+          card_cvv: mock.valid.card.cvv,
+          country: mock.valid.country
+      }, createTokenCallback);
+    }, 2000);
 });
 
 QUnit.test( "invalidCountry", function( assert ) {
@@ -210,11 +229,14 @@ QUnit.test( "invalidCountry", function( assert ) {
       done();
     };
 
-    Ebanx.card.createToken({
-      card_number: mock.valid.card.number,
-      card_name: mock.valid.card.name,
-      card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.invalid.country
-    }, createTokenCallback);
+    // Wait for setPublishableKey async
+    setTimeout(function () {
+      Ebanx.card.createToken({
+        card_number: mock.valid.card.number,
+        card_name: mock.valid.card.name,
+        card_due_date: mock.valid.card.dueDate,
+        card_cvv: mock.valid.card.cvv,
+        country: mock.invalid.country
+      }, createTokenCallback);
+    }, 2000);
 });

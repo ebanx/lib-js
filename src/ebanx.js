@@ -13,8 +13,9 @@ const Ebanx = (function () {
         return {
             isLive: (_private.mode === 'production'),
             setPublishableKey: function (key) {
-                Ebanx.validator.config.validatePublishableKey(key);
-                _private.publicKey = String(key);
+                Ebanx.validator.config.validatePublishableKey(key, function () {
+                    _private.publicKey = String(key);
+                });
             },
             getPublishableKey: function () {
                 if (_private.publicKey.trim() === '')
@@ -60,11 +61,20 @@ Ebanx.errors = (function () {
 Ebanx.validator = (function () {
     return {
         config: {
-            validatePublishableKey: function (key) {
-                // @TODO how make this?
-                var regex = new RegExp("^[0-9]{7}$");
-                if (!regex.test(key))
-                    throw new Ebanx.errors.InvalidValueFieldError('Invalid PublishableKey.', 'PublishableKey');
+            validatePublishableKey: function (key, cb) {
+                const publicKeyResource = Ebanx.utils.api.resources.validPublicIntegrationKey;
+
+                Ebanx.http.ajax
+                  .request({
+                      url: publicKeyResource.url,
+                      method: publicKeyResource.method,
+                      data: {
+                        public_integration_key: key
+                      }
+                  })
+                  .always(function (res) {
+                      cb(res);
+                  });
             }
         },
         /**
@@ -201,23 +211,22 @@ Ebanx.tokenize = (function () {
                 const tokenResource = Ebanx.utils.api.resources.createToken;
 
                 // TODO: Finalizar response do tokenize junto do pay
-
                 Ebanx.http.ajax.request({
                     url: tokenResource.url,
                     method: tokenResource.method,
                     json: true,
                     data: {
-                      payment_type_code: 'visa',
-                      country: cardData.country,
-                      card: cardData
-                    },
-                    headers: {
-                      'Content-type': 'application/json'
+                      request_body: JSON.stringify({
+                          public_integration_key: Ebanx.config.getPublishableKey(),
+                          payment_type_code: 'visa', // TODO: Create utils to dynamic flags
+                          country: cardData.country,
+                          card: cardData
+                      })
                     }
                 })
                 .always(function(result) {
                   if (result.status === 'ERROR' || !('token' in result)) {
-                    console.log('ERRO');
+                      // TODO: Lançar exceção quando der erro
                   }
 
                   cb(result);
@@ -243,7 +252,11 @@ Ebanx.utils = (function () {
     utilsModule.api.resources = {
         createToken: {
             url: `${utilsModule.api.url}/token`,
-            method: 'post'
+            method: 'get'
+        },
+        validPublicIntegrationKey: {
+            url: `${utilsModule.api.url}/merchantIntegrationProperties/isValidPublicIntegrationKey`,
+            method: 'get'
         }
     };
 
@@ -274,7 +287,6 @@ Ebanx.http = (function () {
                 ops.url = ops.url || '';
                 ops.method = ops.method || 'get';
                 ops.data = ops.data || {};
-                ops.data.public_integration_key = Ebanx.config.getPublishableKey();
 
                 var api = {
                     /* jshint expr: true */
@@ -298,12 +310,6 @@ Ebanx.http = (function () {
                                 result = JSON.parse(result);
                               }
 
-                              if(self.xhr.status == 200) {
-                                  self.doneCallback && self.doneCallback.apply(self.host, [result, self.xhr]);
-                              } else {
-                                  self.failCallback && self.failCallback.apply(self.host, [result, self.xhr]);
-                              }
-
                               self.alwaysCallback && self.alwaysCallback.apply(self.host, [result, self.xhr]);
                             }
                           };
@@ -313,39 +319,17 @@ Ebanx.http = (function () {
                             this.xhr.open("GET", `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`, true);
                         } else {
                             this.xhr.open(ops.method.toUpperCase(), ops.url, true);
-                            this.setHeaders({
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Content-type': 'application/x-www-form-urlencoded'
-                            });
-                        }
-
-                        if(ops.headers && typeof ops.headers == 'object') {
-                            this.setHeaders(ops.headers);
                         }
 
                         setTimeout(function() {
-                            // TODO better this
-                            ops.method == 'get' ? self.xhr.send() : self.xhr.send(ops.json ? JSON.stringify(ops.data) : Ebanx.http.normalize.q(ops.data));
+                            self.xhr.send();
                         }, 20);
 
-                        return this;
-                    },
-                    done: function(callback) {
-                        this.doneCallback = callback;
-                        return this;
-                    },
-                    fail: function(callback) {
-                        this.failCallback = callback;
                         return this;
                     },
                     always: function(callback) {
                         this.alwaysCallback = callback;
                         return this;
-                    },
-                    setHeaders: function(headers) {
-                        for(var name in headers) {
-                            this.xhr && this.xhr.setRequestHeader(name.toLowerCase(), headers[name]);
-                        }
                     }
                 };
                 return api.process(ops);
