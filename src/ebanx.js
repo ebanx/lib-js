@@ -93,32 +93,24 @@ Ebanx.validator = (function () {
        * @return {void}
        */
       validateNumber: function (number) {
-        var regex = new RegExp("^[0-9]{16}$");
-        if (!regex.test(number) || !this.luhnAlgCheck(number))
+        var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
+        if (!regex.test(number) || !this.luhnAlgCheck(String(number)))
           throw new Ebanx.errors.InvalidValueFieldError('Invalid card number.', 'card_number');
       },
       /**
        *
        * @function luhnAlgCheck - luhn algorithm
        * @see https://en.wikipedia.org/wiki/Luhn_algorithm
-       * @param {string} val - Number of card to apply alg.
+       * @param {string} cardNumber - Number of card to apply alg.
        *
        * @return {boolean} true if valid false if not valid
        */
-      luhnAlgCheck: function (val) {
-        val = (val + '').replace(/\s+|-/g, '');
-        var sum = 0;
-        for (var i = 0; i < val.length; i++) {
-          var intVal = parseInt(val.substr(i, 1));
-          if (i % 2 === 0) {
-            intVal *= 2;
-            if (intVal > 9) {
-              intVal = 1 + (intVal % 10);
-            }
-          }
-          sum += intVal;
-        }
-        return (sum % 10) === 0;
+      luhnAlgCheck: function(cardNumber) {
+        /* jshint expr: true */
+        var b,c,d,e;
+        for(d = +cardNumber[b = cardNumber.length-1], e=0; b--;)
+          c = +cardNumber[b], d += ++e % 2 ? 2 * c % 10 + (c > 4) : c;
+        return (d%10) === 0;
       },
       /**
        *
@@ -246,7 +238,29 @@ Ebanx.utils = (function () {
     api: {
       url: (Ebanx.config.isLive ? 'http://dev-pay.ebanx.com/ws' : 'http://dev-pay.ebanx.com/ws')
     },
-    availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', ')
+    availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
+    creditCardScheme: function (cardNumber) {
+      Ebanx.validator.card.validateNumber(cardNumber);
+
+      let schemes = {
+        amex: /^3[47][0-9]{13}$/,
+        aura: /^50[0-9]{14,17}$/,
+        elo: /^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)/,
+        diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+        discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+        hipercard: /^(38|60)[0-9]{11,17}$/,
+        mastercard: /^5[1-5][0-9]{14}$/,
+        visa: /^4[0-9]{12}(?:[0-9]{3})?$/
+      };
+
+      for (let scheme in schemes) {
+        if (schemes[scheme].test(cardNumber)) {
+          return scheme;
+        }
+      }
+
+      throw new Ebanx.errors.InvalidValueFieldError('Credit card scheme not found.', 'card_number');
+    }
   };
 
   utilsModule.api.resources = {
