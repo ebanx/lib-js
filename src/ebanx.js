@@ -210,7 +210,7 @@ Ebanx.tokenize = (function () {
           data: {
             request_body: JSON.stringify({
               public_integration_key: Ebanx.config.getPublishableKey(),
-              payment_type_code: 'visa', // TODO: Create utils to dynamic flags
+              payment_type_code: Ebanx.utils.creditCardScheme(cardData.card_number),
               country: cardData.country,
               card: cardData
             })
