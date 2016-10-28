@@ -47,7 +47,6 @@ Ebanx.errors = (function () {
     },
     ResponseError: function (err) {
       this.message = err.message;
-      // TODO: Terminar response error
     }
   };
 })();
@@ -202,7 +201,6 @@ Ebanx.tokenize = (function () {
       token: function (cardData, cb) {
         const tokenResource = Ebanx.utils.api.resources.createToken;
 
-        // TODO: Finalizar response do tokenize junto do pay
         Ebanx.http.ajax.request({
           url: tokenResource.url,
           method: tokenResource.method,
@@ -218,7 +216,7 @@ Ebanx.tokenize = (function () {
         })
           .always(function(result) {
             if (result.status === 'ERROR' || !('token' in result)) {
-              // TODO: Lançar exceção quando der erro
+              throw new Ebanx.errors.ResponseError(result.status_message || 'Error to tokenize.');
             }
 
             cb(result);
@@ -386,11 +384,7 @@ Ebanx.card = (function () {
    * @type {{createToken}}
    */
   $public.createToken = function (cardData, createTokenCallback) {
-    // TODO: Create?
-    // if (Ebanx.utils.isElement?)
-    // provider.construct() ?;
-
-    const response = {
+   const response = {
       data: {},
       error: {}
     };
@@ -406,7 +400,6 @@ Ebanx.card = (function () {
         // TODO: i18n
       }
       response.error.err = e;
-      // TODO: Remove this
 
       createTokenCallback(response);
     }
