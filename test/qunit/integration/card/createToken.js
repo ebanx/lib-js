@@ -2,7 +2,7 @@ QUnit.module( "Ebanx ~> Card ~> CreateToken" );
 
 var mock = {
     config: {
-        publishableKey: 1231000
+        publishableKey: 'pk_1231000'
     },
     valid: {
         card: {
