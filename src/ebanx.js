@@ -11,11 +11,22 @@ const Ebanx = (function () {
 
   $public.config = (function() {
     return {
-      isLive: (_private.mode === 'production'),
+      isLive: function () {
+        return _private.mode === 'production';
+      },
       setPublishableKey: function (key) {
-        Ebanx.validator.config.validatePublishableKey(key, function () {
+        Ebanx.validator.config.validatePublishableKey(key, function (res) {
+          // TODO: Implement a validation to check if the key is really valid
           _private.publicKey = String(key);
         });
+      },
+      setMode: function (mode) {
+        Ebanx.validator.config.validateMode(mode);
+        
+        _private.mode = mode;
+      },
+      getMode: function () {
+        return _private.mode;
       },
       getPublishableKey: function () {
         if (_private.publicKey.trim() === '')
@@ -26,7 +37,7 @@ const Ebanx = (function () {
     };
   })();
 
-  if ($public.config.isLive && location.protocol !== 'https:') {
+  if ($public.config.isLive() && location.protocol !== 'https:') {
     throw 'EbanxInvalidConfigurationError: Your protocol needs to be https.';
   }
 
@@ -38,7 +49,7 @@ Ebanx.errors = (function () {
     InvalidValueFieldError: function (message, field) {
       this.message = message;
       this.field = field;
-      this.name = "InvalidValueFieldError";
+      this.name = 'InvalidValueFieldError';
     },
     InvalidConfigurationError: function (message, config) {
       this.message = message;
@@ -59,7 +70,18 @@ Ebanx.errors = (function () {
  */
 Ebanx.validator = (function () {
   return {
+    /**
+     * @memberof Ebanx/validator
+     * @inner
+     * @type {Object}
+     */
     config: {
+      /**
+       * Validate if the publishable key is validator
+       * @param  {string}   key The publishable merchant key
+       * @param  {Function} cb  The callback
+       * @return {void}
+       */
       validatePublishableKey: function (key, cb) {
         const publicKeyResource = Ebanx.utils.api.resources.validPublicIntegrationKey;
 
@@ -74,6 +96,17 @@ Ebanx.validator = (function () {
           .always(function (res) {
             cb(res);
           });
+      },
+      /**
+       * Validate if mode is "test" or "production"
+       * @param  {string} mode The mode
+       * @throws {Ebanx.errors.InvalidConfigurationError} case the test mode is invalid
+       * @return {void}
+       */
+      validateMode: function (mode) {
+        if (mode.match(/^(test|production)$/) === null) {
+          throw new Ebanx.errors.InvalidConfigurationError('Invalid mode, please, use "test" or "production" as test mode.', 'mode');
+        }
       }
     },
     /**
@@ -95,6 +128,18 @@ Ebanx.validator = (function () {
         var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
         if (!regex.test(number) || !this.luhnAlgCheck(String(number)))
           throw new Ebanx.errors.InvalidValueFieldError('Invalid card number.', 'card_number');
+      },
+      /**
+       * @function validateName - validate the credit card name
+       * @param  {string} name Name of the credit card
+       * @throws {Ebanx.errors.InvalidValueFieldError} case name isn't string and doesn't have length
+       *
+       * @return {void}
+       */
+      validateName: function (name) {
+        if (typeof name !== 'string' || name.length === 0) {
+          throw new Ebanx.errors.InvalidValueFieldError('The credit card name is required.');
+        }
       },
       /**
        *
@@ -120,7 +165,7 @@ Ebanx.validator = (function () {
        * @return {void}
        */
       validateCvv: function (cvv) {
-        var regex = new RegExp("^[0-9]{3}$");
+        var regex = new RegExp('^[0-9]{3}$');
         if (!regex.test(cvv))
           throw new Ebanx.errors.InvalidValueFieldError('Invalid card cvv.', 'card_cvv');
       },
@@ -144,10 +189,10 @@ Ebanx.validator = (function () {
         };
 
         if (((/^\d+$/).test(date.month)) !== true || (parseInt(date.month, 10) <= 12) !== true) {
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid month to card due_date.', 'card_due_date');
+          throw new Ebanx.errors.InvalidValueFieldError('Invalid month to card due date.', 'card_due_date');
         }
         if (!(/^\d+$/).test(date.year)) {
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid year to card due_date.', 'card_due_date');
+          throw new Ebanx.errors.InvalidValueFieldError('Invalid year to card due date.', 'card_due_date');
         }
 
         date.expiration = new Date(date.year, date.month);
@@ -156,7 +201,7 @@ Ebanx.validator = (function () {
         date.expiration.setMonth(date.expiration.getMonth() + 1, 1);
 
         if ((date.expiration > date.now) !== true) {
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid card due_date.', 'card_due_date');
+          throw new Ebanx.errors.InvalidValueFieldError('Invalid card due date.', 'card_due_date');
         }
       },
       /**
@@ -172,9 +217,10 @@ Ebanx.validator = (function () {
        * @return {void}
        */
       validate: function (cardData) {
-        this.validateCvv(cardData.card_cvv);
+        this.validateName(cardData.card_name);
         this.validateNumber(cardData.card_number);
         this.validateDueDate(cardData.card_due_date);
+        this.validateCvv(cardData.card_cvv);
         Ebanx.validator.customer.validateCountry(cardData.country);
       }
     },
@@ -234,7 +280,7 @@ Ebanx.tokenize = (function () {
 Ebanx.utils = (function () {
   const utilsModule = {
     api: {
-      url: (Ebanx.config.isLive ? 'http://dev-pay.ebanx.com/ws' : 'http://dev-pay.ebanx.com/ws')
+      url: (Ebanx.config.isLive() ? 'https://api.ebanx.com/ws' : 'https://sandbox.ebanx.com/ws')
     },
     availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
     creditCardScheme: function (cardNumber) {
@@ -308,7 +354,7 @@ Ebanx.http = (function () {
             this.xhr = null;
 
             if(window.ActiveXObject) {
-              this.xhr = new ActiveXObject('Microsoft.XMLHTTP');
+              this.xhr = new window.ActiveXObject('Microsoft.XMLHTTP');
             } else if(window.XMLHttpRequest) {
               this.xhr = new XMLHttpRequest();
             }
@@ -328,7 +374,7 @@ Ebanx.http = (function () {
             }
 
             if(ops.method.toLowerCase() === 'get') {
-              this.xhr.open("GET", `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`, true);
+              this.xhr.open('GET', `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`, true);
             } else {
               this.xhr.open(ops.method.toUpperCase(), ops.url, true);
             }
@@ -384,7 +430,7 @@ Ebanx.card = (function () {
    * @type {{createToken}}
    */
   $public.createToken = function (cardData, createTokenCallback) {
-   const response = {
+    const response = {
       data: {},
       error: {}
     };
@@ -399,7 +445,7 @@ Ebanx.card = (function () {
       if (e instanceof Ebanx.errors.InvalidValueFieldError) {
         // TODO: i18n
       }
-      response.error.err = e;
+      response.error = e;
 
       createTokenCallback(response);
     }
