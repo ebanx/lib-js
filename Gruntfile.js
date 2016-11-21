@@ -84,4 +84,5 @@ module.exports = function(grunt) {
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('test', ['connect', 'qunit']);
   grunt.registerTask('default', ['webpack', 'connect', 'qunit']);
+  grunt.registerTask('build', ['webpack']);
 };
