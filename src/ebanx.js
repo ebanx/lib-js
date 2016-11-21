@@ -5,6 +5,7 @@
 const Ebanx = (function () {
   const $public = {};
   const _private = {
+    country: '',
     mode: 'test',
     publicKey: ''
   };
@@ -20,9 +21,14 @@ const Ebanx = (function () {
           _private.publicKey = String(key);
         });
       },
+      setCountry: function (country) {
+        Ebanx.validator.config.validateCountry(country);
+
+        _private.country = String(country);
+      },
       setMode: function (mode) {
         Ebanx.validator.config.validateMode(mode);
-        
+
         _private.mode = mode;
       },
       getMode: function () {
@@ -33,6 +39,12 @@ const Ebanx = (function () {
           throw new Ebanx.errors.InvalidConfigurationError('Missing publishable key. You need set publishable key using the method Ebanx.config.setPublishableKey.', 'publicKey');
 
         return _private.publicKey;
+      },
+      getCountry: function () {
+        if (_private.country.trim() === '')
+          throw new Ebanx.errors.InvalidConfigurationError('Missing country.', 'country');
+
+        return _private.country;
       }
     };
   })();
@@ -96,6 +108,18 @@ Ebanx.validator = (function () {
           .always(function (res) {
             cb(res);
           });
+      },
+      /**
+       *
+       * @function validateCountry - validate the transaction country
+       * @param {string} country - transaction country to validate
+       * @throws {Ebanx.errors.InvalidValueFieldError} case country is not valid
+       *
+       * @return {void}
+       */
+      validateCountry: function (country) {
+        if (Ebanx.utils.availableCountries.indexOf(country) === -1)
+          throw new Ebanx.errors.InvalidValueFieldError(`Invalid transaction country. You can use one of them: ${Ebanx.utils.availableCountries}.`, 'country');
       },
       /**
        * Validate if mode is "test" or "production"
@@ -212,7 +236,6 @@ Ebanx.validator = (function () {
        * @param {string} cardData.card_name     - Name of card.
        * @param {string} cardData.card_due_date - Due date of card (format: MM/YYYY).
        * @param {number} cardData.card_cvv      - Cvv of card.
-       * @param {string} cardData.country       - Customer country
        *
        * @return {void}
        */
@@ -221,21 +244,6 @@ Ebanx.validator = (function () {
         this.validateNumber(cardData.card_number);
         this.validateDueDate(cardData.card_due_date);
         this.validateCvv(cardData.card_cvv);
-        Ebanx.validator.customer.validateCountry(cardData.country);
-      }
-    },
-    customer: {
-      /**
-       *
-       * @function validateCountry - validate the customer country
-       * @param {string} country - Customer country to validate
-       * @throws {Ebanx.errors.InvalidValueFieldError} case country is not valid
-       *
-       * @return {void}
-       */
-      validateCountry: function (country) {
-        if (Ebanx.utils.availableCountries.indexOf(country) === -1)
-          throw new Ebanx.errors.InvalidValueFieldError(`Invalid customer country. You can use one of them: ${Ebanx.utils.availableCountries}.`, 'country');
       }
     }
   };
@@ -255,7 +263,7 @@ Ebanx.tokenize = (function () {
             request_body: JSON.stringify({
               public_integration_key: Ebanx.config.getPublishableKey(),
               payment_type_code: Ebanx.utils.creditCardScheme(cardData.card_number),
-              country: cardData.country,
+              country: Ebanx.config.getCountry(),
               card: cardData
             })
           }
@@ -280,7 +288,7 @@ Ebanx.tokenize = (function () {
 Ebanx.utils = (function () {
   const utilsModule = {
     api: {
-      url: (Ebanx.config.isLive() ? 'https://api.ebanx.com/ws' : 'https://sandbox.ebanx.com/ws')
+      path: (Ebanx.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/')
     },
     availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
     creditCardScheme: function (cardNumber) {
@@ -307,6 +315,8 @@ Ebanx.utils = (function () {
     }
   };
 
+  utilsModule.api.url = utilsModule.api.path + 'ws';
+
   utilsModule.api.resources = {
     createToken: {
       url: `${utilsModule.api.url}/token`,
@@ -315,6 +325,14 @@ Ebanx.utils = (function () {
     validPublicIntegrationKey: {
       url: `${utilsModule.api.url}/merchantIntegrationProperties/isValidPublicIntegrationKey`,
       method: 'get'
+    },
+    fingerPrintResource: {
+      url: `${utilsModule.api.path}fingerprint/`,
+      method: 'get'
+    },
+    fingerPrintProvidersResource: {
+      url: `${utilsModule.api.path}fingerprint/provider`,
+      method: 'post'
     }
   };
 
@@ -325,16 +343,49 @@ Ebanx.utils = (function () {
 Ebanx.http = (function () {
   return {
     normalize: {
-      q: function(data, url) {
-        var arr = [], str;
-        for(var name in data) {
-          arr.push(name + '=' + encodeURIComponent(data[name]));
-        }
-        str = arr.join('&');
-        if(str !== '') {
-          return url ? (url.indexOf('?') < 0 ? '?' + str : '&' + str) : str;
-        }
-        return '';
+      q: function (obj, urlEncode) {
+          function flattenObj(x, path) {
+              var result = [];
+
+              path = path || [];
+              Object.keys(x).forEach(function (key) {
+                  if (!x.hasOwnProperty(key)) return;
+
+                  var newPath = path.slice();
+                  newPath.push(key);
+
+                  var vals = [];
+                  if (typeof x[key] == 'object') {
+                      vals = flattenObj(x[key], newPath);
+                  } else {
+                      vals.push({ path: newPath, val: x[key] });
+                  }
+                  vals.forEach(function (obj) {
+                      return result.push(obj);
+                  });
+              });
+
+              return result;
+          }
+
+          var parts = flattenObj(obj);
+
+          parts = parts.map(function (varInfo) {
+              if (varInfo.path.length == 1) varInfo.path = varInfo.path[0];else {
+                  var first = varInfo.path[0];
+                  var rest = varInfo.path.slice(1);
+                  varInfo.path = first + '[' + rest.join('][') + ']';
+              }
+              return varInfo;
+          });
+
+          var queryString = parts.map(function (varInfo) {
+              return varInfo.path + '=' + varInfo.val;
+          }).join('&');
+          if (urlEncode)
+            return encodeURIComponent(queryString);
+          else
+            return queryString;
       }
     },
     ajax: {
@@ -373,11 +424,7 @@ Ebanx.http = (function () {
               };
             }
 
-            if(ops.method.toLowerCase() === 'get') {
-              this.xhr.open('GET', `${ops.url}${Ebanx.http.normalize.q(ops.data, ops.url)}`, true);
-            } else {
-              this.xhr.open(ops.method.toUpperCase(), ops.url, true);
-            }
+            this.xhr.open('GET', `${ops.url}?${Ebanx.http.normalize.q(ops.data)}`, true);
 
             setTimeout(function() {
               self.xhr.send();
@@ -410,7 +457,6 @@ Ebanx.card = (function () {
    * @param {string} cardData.card_name       - Name of card.
    * @param {string} cardData.card_due_date   - Due date of card (format: MM/YYYY).
    * @param {number} cardData.card_cvv        - Cvv of card.
-   * @param {string} cardData.country         - Customer country
    * @callback {function} createTokenCallback - The callback that handles the response.
    *
    * @example <caption>Example usage of createToken.</caption>
@@ -421,8 +467,7 @@ Ebanx.card = (function () {
          card_number: 4111111111111111,
          card_name: 'Justin Bieber',
          card_due_date: '12/2222',
-         card_cvv: 123,
-         country: 'br'
+         card_cvv: 123
         };
    Ebanx.card.createToken(cardData, createTokenCallback);
    *
@@ -439,16 +484,170 @@ Ebanx.card = (function () {
       Ebanx.validator.card.validate(cardData);
       Ebanx.tokenize.card.token(cardData, function (resp) {
         response.data = resp;
-        createTokenCallback(response);
+        Ebanx.deviceFingerprint.setup(function(deviceId){
+          response.data.deviceId = deviceId;
+          createTokenCallback(response);
+        });
       });
     } catch (e) {
       if (e instanceof Ebanx.errors.InvalidValueFieldError) {
         // TODO: i18n
       }
-      response.error = e;
+      response.error.err = e;
 
       createTokenCallback(response);
     }
+  };
+
+  return $public;
+})();
+
+Ebanx.deviceFingerprint = (function () {
+  const $public = {};
+  const _private = {
+    ebanx_session_id: null,
+    providerSessionList: [],
+    providerPostPending: null
+  };
+
+  _private.providers = {
+    kount: {
+      setup: function (settings, cb) {
+        this.build(settings);
+        cb(_private.ebanx_session_id);
+      },
+      build: function (settings) {
+        let d = document;
+        let iframe = d.createElement('iframe');
+        iframe.width = 1;
+        iframe.height = 1;
+        iframe.frameborder = 0;
+        iframe.scrolling = "no";
+        iframe.src = `${Ebanx.utils.api.path}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
+        iframe.style.border = 0;
+        iframe.style.position = "absolute";
+        iframe.style.top = "-200px";
+        iframe.style.left = "-200px";
+        d.getElementsByTagName('body')[0].appendChild(iframe);
+      }
+    },
+    mercadopago: {
+      setup: function (settings, cb) {
+        cb(this._mpGetDeviceID());
+      },
+      _mpGuid: function() {
+        function a() {
+          return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
+        }
+        return a() + a() + "-" + a() + "-" + a() + "-" + a() + "-" + a() + a() + a();
+      },
+      _mpGetDeviceID: function() {
+        var a = this._mpGuid();
+        var c = function(a, b, c) {
+          var d, e, f, g, h = b || {}, i = c || {};
+          h.type = "application/x-shockwave-flash";
+          if (window.ActiveXObject) {
+            h.classid = "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000";
+            i.movie = a;
+          } else h.data = a;
+          e = "<object";
+          for (d in h) e += " " + d + '="' + h[d] + '"';
+          e += ">";
+          for (d in i) e += '<param name="' + d + '" value="' + i[d] + '" />';
+          e += '</object>';
+          f = document.createElement("div");
+          f.innerHTML = e;
+          g = f.firstChild;
+          f.removeChild(g);
+          return g;
+        };
+        new Image().src = "https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=" + a + "&m=1";
+        new Image().src = "https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=" + a + "&m=2";
+        var d = document.createElement("script");
+        d.type = "text/javascript";
+        d.src = "https://content.mercadopago.com/fp/check.js?org_id=jk96mpy0&session_id=" + a;
+        document.body.appendChild(d);
+        var e = c("https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=" + a, {
+          id: "obj_id",
+          width: 1,
+          height: 1
+        }, {
+          movie: "https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=" + a
+        });
+        document.body.appendChild(e);
+        return a;
+      }
+    }
+  };
+
+  _private.getList = function (cb) {
+    const fingerPrintResource = Ebanx.utils.api.resources.fingerPrintResource;
+
+    Ebanx.http.ajax
+      .request({
+        json: true,
+        url: fingerPrintResource.url,
+        method: fingerPrintResource.method,
+        data: {
+          country: Ebanx.config.getCountry(),
+          publicIntegrationKey: Ebanx.config.getPublishableKey()
+        }
+      })
+      .always(function (res) {
+        cb(res);
+      });
+  };
+
+  _private.saveProviderSessionList = function (providerSession) {
+    if (_private.providerPostPending) {
+      clearTimeout(_private.providerPostPending);
+    }
+
+    _private.providerSessionList.push(providerSession);
+    _private.providerPostPending = setTimeout(_private.postProviderSessionList, 1000);
+  };
+
+  _private.postProviderSessionList = function () {
+    let providers = _private.providerSessionList;
+    _private.providerSessionList = [];
+
+    clearTimeout(_private.providerPostPending);
+    _private.providerPostPending = null;
+
+    const fingerPrintProvidersResource = Ebanx.utils.api.resources.fingerPrintProvidersResource;
+
+    Ebanx.http.ajax
+      .request({
+        url: fingerPrintProvidersResource.url,
+        method: fingerPrintProvidersResource.method,
+        data: {
+          publicIntegrationKey: Ebanx.config.getPublishableKey(),
+          ebanx_session_id: _private.ebanx_session_id,
+          providers: providers
+        }
+      })
+      .always(function (res) {
+        return;
+      });
+  };
+
+  $public.setup = function (cb) {
+    _private.getList(function (list) {
+      if (!(list && list.ebanx_session_id)) return; // TODO: how do in this case?
+
+      _private.ebanx_session_id = list.ebanx_session_id;
+
+      cb(list.ebanx_session_id);
+
+      list.providers.forEach(function (data) {
+        _private.providers[data.provider].setup(data.settings, function (session_id) {
+          _private.saveProviderSessionList({
+            provider: data.provider,
+            session_id: session_id
+          });
+        });
+      });
+    });
   };
 
   return $public;

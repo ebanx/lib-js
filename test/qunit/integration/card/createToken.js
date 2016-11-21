@@ -1,10 +1,11 @@
 QUnit.module( "Ebanx ~> Card ~> CreateToken" );
 
 var mock = {
-    config: {
-        publishableKey: 'pk_1231000'
-    },
     valid: {
+        config: {
+          country: 'br',
+          publishableKey: 'pk_1231000'
+        },
         card: {
             numbers: {
               visa: '4111111111111111',
@@ -20,7 +21,6 @@ var mock = {
             dueDate: "12/2222",
             cvv: 123
         },
-        country: 'br',
         createTokenCallback: function (assert, done, ebanxResponse) {
           assert.equal(ebanxResponse.error.constructor, Object);
           assert.equal(Object.keys(ebanxResponse.error).length, 0);
@@ -35,6 +35,9 @@ var mock = {
         }
     },
     invalid: {
+        config: {
+          country: 'zz'
+        },
         card: {
             cvv: 1234,
             dueDate: {
@@ -53,23 +56,26 @@ var mock = {
                 mastercard: '5555555555554442'
             }
         },
-        country: 'zz',
-        createTokenCallback: function (assert, done, ebanxResponse) {
-          assert.equal(ebanxResponse.data.constructor, Object);
-          assert.equal(Object.keys(ebanxResponse.data).length, 0);
+        createTokenCallback: function (cb, assert, done, ebanxResponseError) {
+          assert.equal(ebanxResponseError.data.constructor, Object);
+          assert.equal(Object.keys(ebanxResponseError.data).length, 0);
 
-          assert.equal(ebanxResponse.error.constructor, Object);
-          assert.ok(Object.keys(ebanxResponse.error).length > 0);
-          assert.ok(ebanxResponse.error.hasOwnProperty('err'));
-          assert.ok(ebanxResponse.error.err.hasOwnProperty('message'));
-          assert.equal(ebanxResponse.error.err.message, 'Invalid card number.');
+          assert.equal(ebanxResponseError.error.constructor, Object);
+          assert.ok(Object.keys(ebanxResponseError.error).length > 0);
+          assert.ok(ebanxResponseError.error.hasOwnProperty('err'));
+          assert.ok(ebanxResponseError.error.err.hasOwnProperty('message'));
 
-          done();
+          if (cb && typeof cb === 'function'){
+            cb(ebanxResponseError);
+          } else {
+            done();
+          }
         }
     }
 };
 
-Ebanx.config.setPublishableKey(mock.config.publishableKey);
+Ebanx.config.setCountry(mock.valid.config.country);
+Ebanx.config.setPublishableKey(mock.valid.config.publishableKey);
 
 QUnit.test( "canVisa", function( assert ) {
     assert.expect(7);
@@ -82,8 +88,7 @@ QUnit.test( "canVisa", function( assert ) {
         card_number: mock.valid.card.numbers.visa,
         card_name: mock.valid.card.name,
         card_due_date: mock.valid.card.dueDate,
-        card_cvv: mock.valid.card.cvv,
-        country: mock.valid.country
+        card_cvv: mock.valid.card.cvv
       }, mock.valid.createTokenCallback.bind(null, assert, done));
     }, 2000);
 });
@@ -99,8 +104,7 @@ QUnit.test( "canAura", function( assert ) {
       card_number: mock.valid.card.numbers.aura,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.valid.country
+      card_cvv: mock.valid.card.cvv
     }, mock.valid.createTokenCallback.bind(null, assert, done));
   }, 2000);
 });
@@ -116,8 +120,7 @@ QUnit.test( "canElo", function( assert ) {
       card_number: mock.valid.card.numbers.elo,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.valid.country
+      card_cvv: mock.valid.card.cvv
     }, mock.valid.createTokenCallback.bind(null, assert, done));
   }, 2000);
 });
@@ -133,9 +136,11 @@ QUnit.test( "invalidCardNumberVisa", function( assert ) {
       card_number: mock.invalid.card.numbers.visa,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.valid.country
-    }, mock.invalid.createTokenCallback.bind(null, assert, done));
+      card_cvv: mock.valid.card.cvv
+    }, mock.invalid.createTokenCallback.bind(null, function (ebanxResponseError) {
+        assert.equal(ebanxResponseError.error.err.message, 'Invalid card number.');
+        done();
+    }, assert, done));
   }, 2000);
 });
 
@@ -150,9 +155,11 @@ QUnit.test( "invalidCardNumberAmex", function( assert ) {
       card_number: mock.invalid.card.numbers.amex,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.valid.country
-    }, mock.invalid.createTokenCallback.bind(null, assert, done));
+      card_cvv: mock.valid.card.cvv
+    }, mock.invalid.createTokenCallback.bind(null, function (ebanxResponseError) {
+        assert.equal(ebanxResponseError.error.err.message, 'Invalid card number.');
+        done();
+    }, assert, done));
   }, 2000);
 });
 
@@ -167,9 +174,11 @@ QUnit.test( "invalidCardNumberElo", function( assert ) {
       card_number: mock.invalid.card.numbers.elo,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
-      card_cvv: mock.valid.card.cvv,
-      country: mock.valid.country
-    }, mock.invalid.createTokenCallback.bind(null, assert, done));
+      card_cvv: mock.valid.card.cvv
+    }, mock.invalid.createTokenCallback.bind(null, function (ebanxResponseError) {
+        assert.equal(ebanxResponseError.error.err.message, 'Invalid card number.');
+        done();
+    }, assert, done));
   }, 2000);
 });
 
@@ -178,28 +187,17 @@ QUnit.test( "invalidCardDueDateMonth", function( assert ) {
 
     var done = assert.async(1);
 
-    var createTokenCallback = function (ebanxResponse) {
-        assert.equal(ebanxResponse.error.constructor, Object);
-        assert.equal(Object.keys(ebanxResponse.data).length, 0);
-
-        assert.equal(ebanxResponse.error.constructor, Object);
-        assert.ok(Object.keys(ebanxResponse.error).length > 0);
-        assert.ok(ebanxResponse.error.hasOwnProperty('err'));
-        assert.ok(ebanxResponse.error.err.hasOwnProperty('message'));
-        assert.equal(ebanxResponse.error.err.message, 'Invalid month to card due_date.');
-
-        done();
-    };
-
     // Wait for setPublishableKey async
     setTimeout(function () {
       Ebanx.card.createToken({
           card_number: mock.valid.card.numbers.visa,
           card_name: mock.valid.card.name,
           card_due_date: mock.invalid.card.dueDate.month,
-          card_cvv: mock.valid.card.cvv,
-          country: mock.valid.country
-      }, createTokenCallback);
+          card_cvv: mock.valid.card.cvv
+      }, mock.invalid.createTokenCallback.bind(null, function (ebanxResponseError) {
+        assert.equal(ebanxResponseError.error.err.message, 'Invalid month to card due_date.');
+        done();
+    }, assert, done));
     }, 2000);
 });
 
@@ -208,28 +206,17 @@ QUnit.test( "invalidCardDueDateYear", function( assert ) {
 
     var done = assert.async(1);
 
-    var createTokenCallback = function (ebanxResponse) {
-        assert.equal(ebanxResponse.error.constructor, Object);
-        assert.equal(Object.keys(ebanxResponse.data).length, 0);
-
-        assert.equal(ebanxResponse.error.constructor, Object);
-        assert.ok(Object.keys(ebanxResponse.error).length > 0);
-        assert.ok(ebanxResponse.error.hasOwnProperty('err'));
-        assert.ok(ebanxResponse.error.err.hasOwnProperty('message'));
-        assert.equal(ebanxResponse.error.err.message, 'Invalid year to card due_date.');
-
-        done();
-    };
-
     // Wait for setPublishableKey async
     setTimeout(function () {
       Ebanx.card.createToken({
           card_number: mock.valid.card.numbers.visa,
           card_name: mock.valid.card.name,
           card_due_date: mock.invalid.card.dueDate.year,
-          card_cvv: mock.valid.card.cvv,
-          country: mock.valid.country
-      }, createTokenCallback);
+          card_cvv: mock.valid.card.cvv
+      }, mock.invalid.createTokenCallback.bind(null, function (ebanxResponseError) {
+        assert.equal(ebanxResponseError.error.err.message, 'Invalid year to card due_date.');
+        done();
+    }, assert, done));
     }, 2000);
 });
 
@@ -238,57 +225,24 @@ QUnit.test( "invalidCardDueDate", function( assert ) {
 
     var done = assert.async(1);
 
-    var createTokenCallback = function (ebanxResponse) {
-        assert.equal(ebanxResponse.error.constructor, Object);
-        assert.equal(Object.keys(ebanxResponse.data).length, 0);
-
-        assert.equal(ebanxResponse.error.constructor, Object);
-        assert.ok(Object.keys(ebanxResponse.error).length > 0);
-        assert.ok(ebanxResponse.error.hasOwnProperty('err'));
-        assert.ok(ebanxResponse.error.err.hasOwnProperty('message'));
-        assert.equal(ebanxResponse.error.err.message, 'Invalid card due_date.');
-
-        done();
-    };
-
     // Wait for setPublishableKey async
     setTimeout(function () {
       Ebanx.card.createToken({
           card_number: mock.valid.card.numbers.visa,
           card_name: mock.valid.card.name,
           card_due_date: mock.invalid.card.dueDate.date,
-          card_cvv: mock.valid.card.cvv,
-          country: mock.valid.country
-      }, createTokenCallback);
+          card_cvv: mock.valid.card.cvv
+      }, mock.invalid.createTokenCallback.bind(null, function (ebanxResponseError) {
+        assert.equal(ebanxResponseError.error.err.message, 'Invalid card due_date.');
+        done();
+    }, assert, done));
     }, 2000);
 });
 
 QUnit.test( "invalidCountry", function( assert ) {
-    assert.expect(7);
-
-    var done = assert.async(1);
-
-    var createTokenCallback = function (ebanxResponse) {
-      assert.equal(ebanxResponse.error.constructor, Object);
-      assert.equal(Object.keys(ebanxResponse.data).length, 0);
-
-      assert.equal(ebanxResponse.error.constructor, Object);
-      assert.ok(Object.keys(ebanxResponse.error).length > 0);
-      assert.ok(ebanxResponse.error.hasOwnProperty('err'));
-      assert.ok(ebanxResponse.error.err.hasOwnProperty('message'));
-      assert.equal(ebanxResponse.error.err.message, 'Invalid customer country. You can use one of them: br, cl, co, mx, pe.');
-
-      done();
-    };
-
-    // Wait for setPublishableKey async
-    setTimeout(function () {
-      Ebanx.card.createToken({
-        card_number: mock.valid.card.numbers.visa,
-        card_name: mock.valid.card.name,
-        card_due_date: mock.valid.card.dueDate,
-        card_cvv: mock.valid.card.cvv,
-        country: mock.invalid.country
-      }, createTokenCallback);
-    }, 2000);
+  assert.throws(
+    function() {
+      Ebanx.config.setCountry(mock.invalid.config.country);
+    }
+  );
 });
