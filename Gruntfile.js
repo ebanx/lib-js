@@ -58,7 +58,7 @@ module.exports = function(grunt) {
       all: {
         options: {
           urls: [
-            'http://localhost:8000/test/qunit/integration/card/create-token.html'
+            'http://localhost:8008/test/qunit/integration/card/create-token.html'
           ],
           timeout: 20000
         }
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          port: 8000,
+          port: 8008,
           base: '.'
         }
       }

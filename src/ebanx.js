@@ -439,6 +439,14 @@ Ebanx.http = (function () {
         };
         return api.process(ops);
       }
+    },
+    injectJS: (src, cb) => {
+      const s = document.createElement('script');
+      s.type = 'text/javascript';
+      s.async = true;
+      s.onload = cb;
+      s.src = src;
+      document.getElementsByTagName('head')[0].appendChild(s);
     }
   };
 })();
@@ -576,6 +584,25 @@ Ebanx.deviceFingerprint = (function () {
         });
         document.body.appendChild(e);
         return a;
+      }
+    },
+    openpay: {
+      cdnUrl: 'https://openpay.s3.amazonaws.com/',
+      setup: function (settings, cb) {
+        this.loadJs(() => {
+          OpenPay.setId(settings.id);
+          OpenPay.setApiKey(settings.apiKey);
+          OpenPay.setSandboxMode(settings.sandboxMode);
+
+          cb(OpenPay.deviceData.setup());
+        });
+      },
+      loadJs: function (cb) {
+        Ebanx.http.injectJS('https://code.jquery.com/jquery-2.2.0.min.js', () => {
+          Ebanx.http.injectJS(`${this.cdnUrl}openpay.v1.min.js`, () => {
+            Ebanx.http.injectJS(`${this.cdnUrl}openpay-data.v1.min.js`, cb);
+          });
+        });
       }
     }
   };
