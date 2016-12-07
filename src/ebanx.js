@@ -161,7 +161,7 @@ Ebanx.validator = (function () {
        * @return {void}
        */
       validateName: function (name) {
-        if (typeof name !== 'string' || name.length === 0) {
+        if (typeof name !== 'string' || name.length === 0 || name.match(/[0-9]+/) !== null) {
           throw new Ebanx.errors.InvalidValueFieldError('The credit card name is required.');
         }
       },
@@ -189,7 +189,7 @@ Ebanx.validator = (function () {
        * @return {void}
        */
       validateCvv: function (cvv) {
-        var regex = new RegExp('^[0-9]{3}$');
+        var regex = new RegExp('^[0-9]{3,4}$');
         if (!regex.test(cvv))
           throw new Ebanx.errors.InvalidValueFieldError('Invalid card cvv.', 'card_cvv');
       },
