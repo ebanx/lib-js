@@ -16,7 +16,7 @@ const Ebanx = (function () {
         return _private.mode === 'production';
       },
       setPublishableKey: function (key) {
-        Ebanx.validator.config.validatePublishableKey(key, function (res) {
+        Ebanx.validator.config.validatePublishableKey(key, function () {
           // TODO: Implement a validation to check if the key is really valid
           _private.publicKey = String(key);
         });
@@ -344,48 +344,48 @@ Ebanx.http = (function () {
   return {
     normalize: {
       q: function (obj, urlEncode) {
-          function flattenObj(x, path) {
-              var result = [];
+        function flattenObj(x, path) {
+          var result = [];
 
-              path = path || [];
-              Object.keys(x).forEach(function (key) {
-                  if (!x.hasOwnProperty(key)) return;
+          path = path || [];
+          Object.keys(x).forEach(function (key) {
+            if (!x.hasOwnProperty(key)) return;
 
-                  var newPath = path.slice();
-                  newPath.push(key);
+            var newPath = path.slice();
+            newPath.push(key);
 
-                  var vals = [];
-                  if (typeof x[key] == 'object') {
-                      vals = flattenObj(x[key], newPath);
-                  } else {
-                      vals.push({ path: newPath, val: x[key] });
-                  }
-                  vals.forEach(function (obj) {
-                      return result.push(obj);
-                  });
-              });
-
-              return result;
-          }
-
-          var parts = flattenObj(obj);
-
-          parts = parts.map(function (varInfo) {
-              if (varInfo.path.length == 1) varInfo.path = varInfo.path[0];else {
-                  var first = varInfo.path[0];
-                  var rest = varInfo.path.slice(1);
-                  varInfo.path = first + '[' + rest.join('][') + ']';
-              }
-              return varInfo;
+            var vals = [];
+            if (typeof x[key] == 'object') {
+              vals = flattenObj(x[key], newPath);
+            } else {
+              vals.push({ path: newPath, val: x[key] });
+            }
+            vals.forEach(function (obj) {
+              return result.push(obj);
+            });
           });
 
-          var queryString = parts.map(function (varInfo) {
-              return varInfo.path + '=' + varInfo.val;
-          }).join('&');
-          if (urlEncode)
-            return encodeURIComponent(queryString);
-          else
-            return queryString;
+          return result;
+        }
+
+        var parts = flattenObj(obj);
+
+        parts = parts.map(function (varInfo) {
+          if (varInfo.path.length == 1) varInfo.path = varInfo.path[0];else {
+            var first = varInfo.path[0];
+            var rest = varInfo.path.slice(1);
+            varInfo.path = first + '[' + rest.join('][') + ']';
+          }
+          return varInfo;
+        });
+
+        var queryString = parts.map(function (varInfo) {
+          return varInfo.path + '=' + varInfo.val;
+        }).join('&');
+        if (urlEncode)
+          return encodeURIComponent(queryString);
+        else
+          return queryString;
       }
     },
     ajax: {
@@ -530,12 +530,12 @@ Ebanx.deviceFingerprint = (function () {
         iframe.width = 1;
         iframe.height = 1;
         iframe.frameborder = 0;
-        iframe.scrolling = "no";
+        iframe.scrolling = 'no';
         iframe.src = `${Ebanx.utils.api.path}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
         iframe.style.border = 0;
-        iframe.style.position = "absolute";
-        iframe.style.top = "-200px";
-        iframe.style.left = "-200px";
+        iframe.style.position = 'absolute';
+        iframe.style.top = '-200px';
+        iframe.style.left = '-200px';
         d.getElementsByTagName('body')[0].appendChild(iframe);
       }
     },
@@ -547,40 +547,40 @@ Ebanx.deviceFingerprint = (function () {
         function a() {
           return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
         }
-        return a() + a() + "-" + a() + "-" + a() + "-" + a() + "-" + a() + a() + a();
+        return a() + a() + '-' + a() + '-' + a() + '-' + a() + '-' + a() + a() + a();
       },
       _mpGetDeviceID: function() {
         var a = this._mpGuid();
         var c = function(a, b, c) {
           var d, e, f, g, h = b || {}, i = c || {};
-          h.type = "application/x-shockwave-flash";
+          h.type = 'application/x-shockwave-flash';
           if (window.ActiveXObject) {
-            h.classid = "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000";
+            h.classid = 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000';
             i.movie = a;
           } else h.data = a;
-          e = "<object";
-          for (d in h) e += " " + d + '="' + h[d] + '"';
-          e += ">";
+          e = '<object';
+          for (d in h) e += ' ' + d + '="' + h[d] + '"';
+          e += '>';
           for (d in i) e += '<param name="' + d + '" value="' + i[d] + '" />';
           e += '</object>';
-          f = document.createElement("div");
+          f = document.createElement('div');
           f.innerHTML = e;
           g = f.firstChild;
           f.removeChild(g);
           return g;
         };
-        new Image().src = "https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=" + a + "&m=1";
-        new Image().src = "https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=" + a + "&m=2";
-        var d = document.createElement("script");
-        d.type = "text/javascript";
-        d.src = "https://content.mercadopago.com/fp/check.js?org_id=jk96mpy0&session_id=" + a;
+        new Image().src = 'https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=' + a + '&m=1';
+        new Image().src = 'https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=' + a + '&m=2';
+        var d = document.createElement('script');
+        d.type = 'text/javascript';
+        d.src = 'https://content.mercadopago.com/fp/check.js?org_id=jk96mpy0&session_id=' + a;
         document.body.appendChild(d);
-        var e = c("https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=" + a, {
-          id: "obj_id",
+        var e = c('https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=' + a, {
+          id: 'obj_id',
           width: 1,
           height: 1
         }, {
-          movie: "https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=" + a
+          movie: 'https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=' + a
         });
         document.body.appendChild(e);
         return a;
@@ -653,7 +653,7 @@ Ebanx.deviceFingerprint = (function () {
           providers: providers
         }
       })
-      .always(function (res) {
+      .always(function () {
         return;
       });
   };
