@@ -67,9 +67,6 @@ Ebanx.errors = (function () {
       this.message = message;
       this.invalidConfiguration = config;
       this.name = 'InvalidConfigurationError';
-    },
-    ResponseError: function (err) {
-      this.message = err.message;
     }
   };
 })();
@@ -252,7 +249,7 @@ Ebanx.validator = (function () {
 Ebanx.tokenize = (function () {
   return {
     card: {
-      token: function (cardData, cb) {
+      token: function (cardData, cb, errorCallback) {
         const tokenResource = Ebanx.utils.api.resources.createToken;
 
         Ebanx.http.ajax.request({
@@ -270,10 +267,10 @@ Ebanx.tokenize = (function () {
         })
           .always(function(result) {
             if (result.status === 'ERROR' || !('token' in result)) {
-              throw new Ebanx.errors.ResponseError(result.status_message || 'Error to tokenize.');
+              return errorCallback(result);
             }
 
-            cb(result);
+            return cb(result);
           });
       }
     }
@@ -488,15 +485,25 @@ Ebanx.card = (function () {
       error: {}
     };
 
+    const tokenSuccess = resp => {
+      response.data = resp;
+
+      Ebanx.deviceFingerprint.setup(function(deviceId){
+        response.data.deviceId = deviceId;
+
+        return createTokenCallback(response);
+      });
+    };
+
+    const tokenError = err => {
+      response.error.err = err;
+
+      return createTokenCallback(response);
+    };
+
     try {
       Ebanx.validator.card.validate(cardData);
-      Ebanx.tokenize.card.token(cardData, function (resp) {
-        response.data = resp;
-        Ebanx.deviceFingerprint.setup(function(deviceId){
-          response.data.deviceId = deviceId;
-          createTokenCallback(response);
-        });
-      });
+      Ebanx.tokenize.card.token(cardData, tokenSuccess, tokenError);
     } catch (e) {
       if (e instanceof Ebanx.errors.InvalidValueFieldError) {
         // TODO: i18n
