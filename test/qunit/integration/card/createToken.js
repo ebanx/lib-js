@@ -1,4 +1,4 @@
-QUnit.module( "Ebanx ~> Card ~> CreateToken" );
+QUnit.module( "EBANX ~> Card ~> CreateToken" );
 
 var mock = {
     valid: {
@@ -74,8 +74,8 @@ var mock = {
     }
 };
 
-Ebanx.config.setCountry(mock.valid.config.country);
-Ebanx.config.setPublishableKey(mock.valid.config.publishableKey);
+EBANX.config.setCountry(mock.valid.config.country);
+EBANX.config.setPublishableKey(mock.valid.config.publishableKey);
 
 QUnit.test( "canVisa", function( assert ) {
     assert.expect(7);
@@ -84,7 +84,7 @@ QUnit.test( "canVisa", function( assert ) {
 
     // Wait for setPublishableKey async
     setTimeout(function () {
-      Ebanx.card.createToken({
+      EBANX.card.createToken({
         card_number: mock.valid.card.numbers.visa,
         card_name: mock.valid.card.name,
         card_due_date: mock.valid.card.dueDate,
@@ -100,7 +100,7 @@ QUnit.test( "canAura", function( assert ) {
 
   // Wait for setPublishableKey async
   setTimeout(function () {
-    Ebanx.card.createToken({
+    EBANX.card.createToken({
       card_number: mock.valid.card.numbers.aura,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
@@ -116,7 +116,7 @@ QUnit.test( "canElo", function( assert ) {
 
   // Wait for setPublishableKey async
   setTimeout(function () {
-    Ebanx.card.createToken({
+    EBANX.card.createToken({
       card_number: mock.valid.card.numbers.elo,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
@@ -132,7 +132,7 @@ QUnit.test( "invalidCardNumberVisa", function( assert ) {
 
   // Wait for setPublishableKey async
   setTimeout(function () {
-    Ebanx.card.createToken({
+    EBANX.card.createToken({
       card_number: mock.invalid.card.numbers.visa,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
@@ -151,7 +151,7 @@ QUnit.test( "invalidCardNumberAmex", function( assert ) {
 
   // Wait for setPublishableKey async
   setTimeout(function () {
-    Ebanx.card.createToken({
+    EBANX.card.createToken({
       card_number: mock.invalid.card.numbers.amex,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
@@ -170,7 +170,7 @@ QUnit.test( "invalidCardNumberElo", function( assert ) {
 
   // Wait for setPublishableKey async
   setTimeout(function () {
-    Ebanx.card.createToken({
+    EBANX.card.createToken({
       card_number: mock.invalid.card.numbers.elo,
       card_name: mock.valid.card.name,
       card_due_date: mock.valid.card.dueDate,
@@ -189,7 +189,7 @@ QUnit.test( "invalidCardDueDateMonth", function( assert ) {
 
     // Wait for setPublishableKey async
     setTimeout(function () {
-      Ebanx.card.createToken({
+      EBANX.card.createToken({
           card_number: mock.valid.card.numbers.visa,
           card_name: mock.valid.card.name,
           card_due_date: mock.invalid.card.dueDate.month,
@@ -208,7 +208,7 @@ QUnit.test( "invalidCardDueDateYear", function( assert ) {
 
     // Wait for setPublishableKey async
     setTimeout(function () {
-      Ebanx.card.createToken({
+      EBANX.card.createToken({
           card_number: mock.valid.card.numbers.visa,
           card_name: mock.valid.card.name,
           card_due_date: mock.invalid.card.dueDate.year,
@@ -227,7 +227,7 @@ QUnit.test( "invalidCardDueDate", function( assert ) {
 
     // Wait for setPublishableKey async
     setTimeout(function () {
-      Ebanx.card.createToken({
+      EBANX.card.createToken({
           card_number: mock.valid.card.numbers.visa,
           card_name: mock.valid.card.name,
           card_due_date: mock.invalid.card.dueDate.date,
@@ -242,7 +242,7 @@ QUnit.test( "invalidCardDueDate", function( assert ) {
 QUnit.test( "invalidCountry", function( assert ) {
   assert.throws(
     function() {
-      Ebanx.config.setCountry(mock.invalid.config.country);
+      EBANX.config.setCountry(mock.invalid.config.country);
     }
   );
 });

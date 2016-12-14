@@ -1,8 +1,8 @@
 /**
- * @module Ebanx
+ * @module EBANX
  * @global
  */
-const Ebanx = (function () {
+const EBANX = (function () {
   const $public = {};
   const _private = {
     country: '',
@@ -16,18 +16,18 @@ const Ebanx = (function () {
         return _private.mode === 'production';
       },
       setPublishableKey: function (key) {
-        Ebanx.validator.config.validatePublishableKey(key, function () {
+        EBANX.validator.config.validatePublishableKey(key, function () {
           // TODO: Implement a validation to check if the key is really valid
           _private.publicKey = String(key);
         });
       },
       setCountry: function (country) {
-        Ebanx.validator.config.validateCountry(country);
+        EBANX.validator.config.validateCountry(country);
 
         _private.country = String(country);
       },
       setMode: function (mode) {
-        Ebanx.validator.config.validateMode(mode);
+        EBANX.validator.config.validateMode(mode);
 
         _private.mode = mode;
       },
@@ -36,13 +36,13 @@ const Ebanx = (function () {
       },
       getPublishableKey: function () {
         if (_private.publicKey.trim() === '')
-          throw new Ebanx.errors.InvalidConfigurationError('Missing publishable key. You need set publishable key using the method Ebanx.config.setPublishableKey.', 'publicKey');
+          throw new EBANX.errors.InvalidConfigurationError('Missing publishable key. You need set publishable key using the method EBANX.config.setPublishableKey.', 'publicKey');
 
         return _private.publicKey;
       },
       getCountry: function () {
         if (_private.country.trim() === '')
-          throw new Ebanx.errors.InvalidConfigurationError('Missing country.', 'country');
+          throw new EBANX.errors.InvalidConfigurationError('Missing country.', 'country');
 
         return _private.country;
       }
@@ -50,13 +50,13 @@ const Ebanx = (function () {
   })();
 
   if ($public.config.isLive() && location.protocol !== 'https:') {
-    throw 'EbanxInvalidConfigurationError: Your protocol needs to be https.';
+    throw 'EBANXInvalidConfigurationError: Your protocol needs to be https.';
   }
 
   return $public;
 })();
 
-Ebanx.errors = (function () {
+EBANX.errors = (function () {
   return {
     InvalidValueFieldError: function (message, field) {
       this.message = message;
@@ -73,14 +73,14 @@ Ebanx.errors = (function () {
 
 /**
  * Protected module validator - utils to validate objects data
- * @module Ebanx/validator
- * @namespace Ebanx/validator
+ * @module EBANX/validator
+ * @namespace EBANX/validator
  * @protected
  */
-Ebanx.validator = (function () {
+EBANX.validator = (function () {
   return {
     /**
-     * @memberof Ebanx/validator
+     * @memberof EBANX/validator
      * @inner
      * @type {Object}
      */
@@ -92,9 +92,9 @@ Ebanx.validator = (function () {
        * @return {void}
        */
       validatePublishableKey: function (key, cb) {
-        const publicKeyResource = Ebanx.utils.api.resources.validPublicIntegrationKey;
+        const publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey;
 
-        Ebanx.http.ajax
+        EBANX.http.ajax
           .request({
             url: publicKeyResource.url,
             method: publicKeyResource.method,
@@ -110,30 +110,30 @@ Ebanx.validator = (function () {
        *
        * @function validateCountry - validate the transaction country
        * @param {string} country - transaction country to validate
-       * @throws {Ebanx.errors.InvalidValueFieldError} case country is not valid
+       * @throws {EBANX.errors.InvalidValueFieldError} case country is not valid
        *
        * @return {void}
        */
       validateCountry: function (country) {
-        if (Ebanx.utils.availableCountries.indexOf(country) === -1)
-          throw new Ebanx.errors.InvalidValueFieldError(`Invalid transaction country. You can use one of them: ${Ebanx.utils.availableCountries}.`, 'country');
+        if (EBANX.utils.availableCountries.indexOf(country) === -1)
+          throw new EBANX.errors.InvalidValueFieldError(`Invalid transaction country. You can use one of them: ${EBANX.utils.availableCountries}.`, 'country');
       },
       /**
        * Validate if mode is "test" or "production"
        * @param  {string} mode The mode
-       * @throws {Ebanx.errors.InvalidConfigurationError} case the test mode is invalid
+       * @throws {EBANX.errors.InvalidConfigurationError} case the test mode is invalid
        * @return {void}
        */
       validateMode: function (mode) {
         if (mode.match(/^(test|production)$/) === null) {
-          throw new Ebanx.errors.InvalidConfigurationError('Invalid mode, please, use "test" or "production" as test mode.', 'mode');
+          throw new EBANX.errors.InvalidConfigurationError('Invalid mode, please, use "test" or "production" as test mode.', 'mode');
         }
       }
     },
     /**
-     * Card object validator in Ebanx/validator~card.
+     * Card object validator in EBANX/validator~card.
      *
-     * @memberof Ebanx/validator
+     * @memberof EBANX/validator
      * @inner
      */
     card: {
@@ -141,25 +141,25 @@ Ebanx.validator = (function () {
        *
        * @function validateNumber - validate a card number
        * @param {number} number - Number of card to validate.
-       * @throws {Ebanx.errors.InvalidValueFieldError} case card number is not valid
+       * @throws {EBANX.errors.InvalidValueFieldError} case card number is not valid
        *
        * @return {void}
        */
       validateNumber: function (number) {
         var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
         if (!regex.test(number) || !this.luhnAlgCheck(String(number)))
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid card number.', 'card_number');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid card number.', 'card_number');
       },
       /**
        * @function validateName - validate the credit card name
        * @param  {string} name Name of the credit card
-       * @throws {Ebanx.errors.InvalidValueFieldError} case name isn't string and doesn't have length
+       * @throws {EBANX.errors.InvalidValueFieldError} case name isn't string and doesn't have length
        *
        * @return {void}
        */
       validateName: function (name) {
         if (typeof name !== 'string' || name.length === 0 || name.match(/[0-9]+/) !== null) {
-          throw new Ebanx.errors.InvalidValueFieldError('The credit card name is required.');
+          throw new EBANX.errors.InvalidValueFieldError('The credit card name is required.');
         }
       },
       /**
@@ -181,22 +181,22 @@ Ebanx.validator = (function () {
        *
        * @function validateCvv - validate a card cvv
        * @param {number} cvv - Cvv of card to validate.
-       * @throws {Ebanx.errors.InvalidValueFieldError} case card cvv is not valid
+       * @throws {EBANX.errors.InvalidValueFieldError} case card cvv is not valid
        *
        * @return {void}
        */
       validateCvv: function (cvv) {
         var regex = new RegExp('^[0-9]{3,4}$');
         if (!regex.test(cvv))
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid card cvv.', 'card_cvv');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid card cvv.', 'card_cvv');
       },
       /**
        *
        * @function validateDueDate - validate a card due date
        * @param {string} dueDate - Due date of card to validate.
-       * @throws {Ebanx.errors.InvalidValueFieldError} case card due date is not valid
-       * @throws {Ebanx.errors.InvalidValueFieldError} case card due date year is not valid
-       * @throws {Ebanx.errors.InvalidValueFieldError} case card due date month is not valid
+       * @throws {EBANX.errors.InvalidValueFieldError} case card due date is not valid
+       * @throws {EBANX.errors.InvalidValueFieldError} case card due date year is not valid
+       * @throws {EBANX.errors.InvalidValueFieldError} case card due date month is not valid
        *
        * @return {void}
        */
@@ -210,10 +210,10 @@ Ebanx.validator = (function () {
         };
 
         if (((/^\d+$/).test(date.month)) !== true || (parseInt(date.month, 10) <= 12) !== true) {
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid month to card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid month to card due date.', 'card_due_date');
         }
         if (!(/^\d+$/).test(date.year)) {
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid year to card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid year to card due date.', 'card_due_date');
         }
 
         date.expiration = new Date(date.year, date.month);
@@ -222,7 +222,7 @@ Ebanx.validator = (function () {
         date.expiration.setMonth(date.expiration.getMonth() + 1, 1);
 
         if ((date.expiration > date.now) !== true) {
-          throw new Ebanx.errors.InvalidValueFieldError('Invalid card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid card due date.', 'card_due_date');
         }
       },
       /**
@@ -246,21 +246,21 @@ Ebanx.validator = (function () {
   };
 })();
 
-Ebanx.tokenize = (function () {
+EBANX.tokenize = (function () {
   return {
     card: {
       token: function (cardData, cb, errorCallback) {
-        const tokenResource = Ebanx.utils.api.resources.createToken;
+        const tokenResource = EBANX.utils.api.resources.createToken;
 
-        Ebanx.http.ajax.request({
+        EBANX.http.ajax.request({
           url: tokenResource.url,
           method: tokenResource.method,
           json: true,
           data: {
             request_body: JSON.stringify({
-              public_integration_key: Ebanx.config.getPublishableKey(),
-              payment_type_code: Ebanx.utils.creditCardScheme(cardData.card_number),
-              country: Ebanx.config.getCountry(),
+              public_integration_key: EBANX.config.getPublishableKey(),
+              payment_type_code: EBANX.utils.creditCardScheme(cardData.card_number),
+              country: EBANX.config.getCountry(),
               card: cardData
             })
           }
@@ -279,17 +279,17 @@ Ebanx.tokenize = (function () {
 
 /**
  * Public Utils Module
- * @module Ebanx/utils
+ * @module EBANX/utils
  * @public
  */
-Ebanx.utils = (function () {
+EBANX.utils = (function () {
   const utilsModule = {
     api: {
-      path: (Ebanx.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/')
+      path: (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/')
     },
     availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
     creditCardScheme: function (cardNumber) {
-      Ebanx.validator.card.validateNumber(cardNumber);
+      EBANX.validator.card.validateNumber(cardNumber);
 
       let schemes = {
         amex: /^3[47][0-9]{13}$/,
@@ -308,7 +308,7 @@ Ebanx.utils = (function () {
         }
       }
 
-      throw new Ebanx.errors.InvalidValueFieldError('Credit card scheme not found.', 'card_number');
+      throw new EBANX.errors.InvalidValueFieldError('Credit card scheme not found.', 'card_number');
     }
   };
 
@@ -337,7 +337,7 @@ Ebanx.utils = (function () {
 })();
 
 
-Ebanx.http = (function () {
+EBANX.http = (function () {
   return {
     normalize: {
       q: function (obj, urlEncode) {
@@ -421,7 +421,7 @@ Ebanx.http = (function () {
               };
             }
 
-            this.xhr.open('GET', `${ops.url}?${Ebanx.http.normalize.q(ops.data)}`, true);
+            this.xhr.open('GET', `${ops.url}?${EBANX.http.normalize.q(ops.data)}`, true);
 
             setTimeout(function() {
               self.xhr.send();
@@ -450,10 +450,10 @@ Ebanx.http = (function () {
 
 /**
  * Public module Card payment method of EBANX
- * @module Ebanx/card
+ * @module EBANX/card
  * @public
  */
-Ebanx.card = (function () {
+EBANX.card = (function () {
   const $public = {};
 
   /**
@@ -474,7 +474,7 @@ Ebanx.card = (function () {
          card_due_date: '12/2222',
          card_cvv: 123
         };
-   Ebanx.card.createToken(cardData, createTokenCallback);
+   EBANX.card.createToken(cardData, createTokenCallback);
    *
    * @return {object} response object.
    * @type {{createToken}}
@@ -488,7 +488,7 @@ Ebanx.card = (function () {
     const tokenSuccess = resp => {
       response.data = resp;
 
-      Ebanx.deviceFingerprint.setup(function(deviceId){
+      EBANX.deviceFingerprint.setup(function(deviceId){
         response.data.deviceId = deviceId;
 
         return createTokenCallback(response);
@@ -502,10 +502,10 @@ Ebanx.card = (function () {
     };
 
     try {
-      Ebanx.validator.card.validate(cardData);
-      Ebanx.tokenize.card.token(cardData, tokenSuccess, tokenError);
+      EBANX.validator.card.validate(cardData);
+      EBANX.tokenize.card.token(cardData, tokenSuccess, tokenError);
     } catch (e) {
-      if (e instanceof Ebanx.errors.InvalidValueFieldError) {
+      if (e instanceof EBANX.errors.InvalidValueFieldError) {
         // TODO: i18n
       }
       response.error.err = e;
@@ -517,7 +517,7 @@ Ebanx.card = (function () {
   return $public;
 })();
 
-Ebanx.deviceFingerprint = (function () {
+EBANX.deviceFingerprint = (function () {
   const $public = {};
   const _private = {
     ebanx_session_id: null,
@@ -538,7 +538,7 @@ Ebanx.deviceFingerprint = (function () {
         iframe.height = 1;
         iframe.frameborder = 0;
         iframe.scrolling = 'no';
-        iframe.src = `${Ebanx.utils.api.path}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
+        iframe.src = `${EBANX.utils.api.path}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
         iframe.style.border = 0;
         iframe.style.position = 'absolute';
         iframe.style.top = '-200px';
@@ -605,9 +605,9 @@ Ebanx.deviceFingerprint = (function () {
         });
       },
       loadJs: function (cb) {
-        Ebanx.http.injectJS('https://code.jquery.com/jquery-2.2.0.min.js', () => {
-          Ebanx.http.injectJS(`${this.cdnUrl}openpay.v1.min.js`, () => {
-            Ebanx.http.injectJS(`${this.cdnUrl}openpay-data.v1.min.js`, cb);
+        EBANX.http.injectJS('https://code.jquery.com/jquery-2.2.0.min.js', () => {
+          EBANX.http.injectJS(`${this.cdnUrl}openpay.v1.min.js`, () => {
+            EBANX.http.injectJS(`${this.cdnUrl}openpay-data.v1.min.js`, cb);
           });
         });
       }
@@ -615,16 +615,16 @@ Ebanx.deviceFingerprint = (function () {
   };
 
   _private.getList = function (cb) {
-    const fingerPrintResource = Ebanx.utils.api.resources.fingerPrintResource;
+    const fingerPrintResource = EBANX.utils.api.resources.fingerPrintResource;
 
-    Ebanx.http.ajax
+    EBANX.http.ajax
       .request({
         json: true,
         url: fingerPrintResource.url,
         method: fingerPrintResource.method,
         data: {
-          country: Ebanx.config.getCountry(),
-          publicIntegrationKey: Ebanx.config.getPublishableKey()
+          country: EBANX.config.getCountry(),
+          publicIntegrationKey: EBANX.config.getPublishableKey()
         }
       })
       .always(function (res) {
@@ -648,14 +648,14 @@ Ebanx.deviceFingerprint = (function () {
     clearTimeout(_private.providerPostPending);
     _private.providerPostPending = null;
 
-    const fingerPrintProvidersResource = Ebanx.utils.api.resources.fingerPrintProvidersResource;
+    const fingerPrintProvidersResource = EBANX.utils.api.resources.fingerPrintProvidersResource;
 
-    Ebanx.http.ajax
+    EBANX.http.ajax
       .request({
         url: fingerPrintProvidersResource.url,
         method: fingerPrintProvidersResource.method,
         data: {
-          publicIntegrationKey: Ebanx.config.getPublishableKey(),
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
           ebanx_session_id: _private.ebanx_session_id,
           providers: providers
         }
@@ -687,4 +687,4 @@ Ebanx.deviceFingerprint = (function () {
   return $public;
 })();
 
-module.exports = Ebanx;
+module.exports = EBANX;

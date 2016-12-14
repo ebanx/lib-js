@@ -1,15 +1,15 @@
 var
-    Ebanx  = require( '../../../src/ebanx' ),
+    EBANX  = require( '../../../src/ebanx' ),
     should = require( 'should' )
 ;
 
-describe( 'Ebanx', function() {
+describe( 'EBANX', function() {
     describe( '~Unit~', function() {
         describe( 'Http', function() {
             describe( 'Ajax', function() {
                 describe( 'Request', function() {
                     it( 'can', function() {
-                        // Ebanx.http.ajax.request({
+                        // EBANX.http.ajax.request({
                         //     url: 'data.php',
                         //     method: 'post',
                         //     data: {

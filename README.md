@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.com/ebanx/checkout-js.svg?token=fnHBQhvUoN1zMVexkAyq&branch=master)](https://travis-ci.com/ebanx/checkout-js)
 
-EBANX JS CHECKOUT makes it easy to collect [payments in Brazil, Mexico, Chile, Colombia, Peru](), using local currencies and payment methods in an easy and secure way. If you need help please reach us at <developer support channel here>. 
+EBANX JS CHECKOUT makes it easy to collect [payments in Brazil, Mexico, Chile, Colombia, Peru](), using local currencies and payment methods in an easy and secure way. If you need help please reach us at <developer support channel here>.
 
-## Start using EbanxCheckout.js
+## Start using EBANXCheckout.js
 
-### 1. Add this script to your page: 
+### 1. Add this script to your page:
 
 ```html
 <script type="text/javascript" src="https://js.ebanx.com/"></script>
@@ -16,7 +16,7 @@ EBANX JS CHECKOUT makes it easy to collect [payments in Brazil, Mexico, Chile, C
 To identify your site to EBANX API you must start by providing your [publishable key](https://developers.ebanx.com/merchant-area/merchant-options).
 
 ```javascript
-Ebanx.config.setPublishableKey('put your key here');
+EBANX.config.setPublishableKey('put your key here');
 ```
 
 ### 3. Create a credit card request
@@ -36,7 +36,7 @@ var createTokenCallback = function(ebanxResponse) {
   }
 }
 
-Ebanx.card.createToken({
+EBANX.card.createToken({
   card_number: document.getElementById('card-number').value,
   card_name: document.getElementById('card-name').value,
   card_due_date: document.getElementById('card-due-date').value,
@@ -59,7 +59,7 @@ var createTokenCallback = function(ebanxResponse) {
   }
 }
 
-Ebanx.card.prepareRequest({
+EBANX.card.prepareRequest({
   customer_name: document.getElementById('customer_name').value,
   customer_email: document.getElementById('customer_email').value,
   customer_document: document.getElementById('customer_document').value,

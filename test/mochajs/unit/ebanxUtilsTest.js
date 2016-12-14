@@ -1,9 +1,9 @@
 var
-  Ebanx  = require( '../../../src/ebanx' ),
+  EBANX  = require( '../../../src/ebanx' ),
   should = require( 'should' )
   ;
 
-describe( 'Ebanx', function() {
+describe( 'EBANX', function() {
   describe('~Unit~', function () {
     describe('Utils', function () {
       describe('creditCardScheme', function () {
@@ -19,14 +19,14 @@ describe( 'Ebanx', function() {
             mastercard: '5555555555554444'
           };
 
-          Ebanx.utils.creditCardScheme(cards.visa).should.equal('visa');
-          Ebanx.utils.creditCardScheme(cards.amex).should.equal('amex');
-          Ebanx.utils.creditCardScheme(cards.aura).should.equal('aura');
-          Ebanx.utils.creditCardScheme(cards.diners).should.equal('diners');
-          Ebanx.utils.creditCardScheme(cards.discover).should.equal('discover');
-          Ebanx.utils.creditCardScheme(cards.elo).should.equal('elo');
-          Ebanx.utils.creditCardScheme(cards.hipercard).should.equal('hipercard');
-          Ebanx.utils.creditCardScheme(cards.mastercard).should.equal('mastercard');
+          EBANX.utils.creditCardScheme(cards.visa).should.equal('visa');
+          EBANX.utils.creditCardScheme(cards.amex).should.equal('amex');
+          EBANX.utils.creditCardScheme(cards.aura).should.equal('aura');
+          EBANX.utils.creditCardScheme(cards.diners).should.equal('diners');
+          EBANX.utils.creditCardScheme(cards.discover).should.equal('discover');
+          EBANX.utils.creditCardScheme(cards.elo).should.equal('elo');
+          EBANX.utils.creditCardScheme(cards.hipercard).should.equal('hipercard');
+          EBANX.utils.creditCardScheme(cards.mastercard).should.equal('mastercard');
         });
 
         it('invalid', function () {
@@ -41,14 +41,14 @@ describe( 'Ebanx', function() {
             mastercard: '5555555555554442'
           };
 
-          (function () { Ebanx.utils.creditCardScheme(cards.visa) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.amex) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.aura) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.diners) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.discover) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.elo) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.hipercard) }).should.throw();
-          (function () { Ebanx.utils.creditCardScheme(cards.mastercard) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.visa) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.amex) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.aura) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.diners) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.discover) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.elo) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.hipercard) }).should.throw();
+          (function () { EBANX.utils.creditCardScheme(cards.mastercard) }).should.throw();
         });
       });
     });

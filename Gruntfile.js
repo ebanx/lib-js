@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         entry: "./src/ebanx.js",
         output: {
           filename: "./dist/ebanx.js",
-          library: "Ebanx",
+          library: "EBANX",
           libraryTarget: "umd",
           umdNamedDefine: "true"
         },
