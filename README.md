@@ -21,11 +21,11 @@ EBANX.config.setPublishableKey('put your key here');
 
 ### 3. Create a credit card request
 
-Lets start by collecting credit-card details an preparing a request token, please notice that other payment methods are also supported, see [payment methods]().
+Lets start by collecting credit card details and preparing a request token, please notice that other payment methods are also supported, see [payment methods]().
 
 #### card.createToken
 
-Creates a single use token used to pass credit-card information to your server in a safe way.
+Creates a single use token used to pass credit card information to your server in a safe way.
 
 ```javascript
 var createTokenCallback = function(ebanxResponse) {
@@ -48,7 +48,7 @@ EBANX.card.createToken({
 
 #### card.createRequest
 
-Creates a single use token used to pass credit-card information to your server in a safe way.
+Creates a single use token used to pass credit card information to your server in a safe way.
 
 ```javascript
 var createTokenCallback = function(ebanxResponse) {
