@@ -18,6 +18,7 @@ const EBANX = (function () {
       setPublishableKey: function (key) {
         EBANX.validator.config.validatePublishableKey(key, function () {
           // TODO: Implement a validation to check if the key is really valid
+          // Isn't the response passed as an argument supposed to serve this purpose?
           _private.publicKey = String(key);
         });
       },
@@ -35,21 +36,24 @@ const EBANX = (function () {
         return _private.mode;
       },
       getPublishableKey: function () {
+        //unnecessary trim, public key is either valid or blank at this point, right?
         if (_private.publicKey.trim() === '')
           throw new EBANX.errors.InvalidConfigurationError('Missing publishable key. You need set publishable key using the method EBANX.config.setPublishableKey.', 'publicKey');
 
         return _private.publicKey;
       },
       getCountry: function () {
+        //unnecessary trim, country is either valid or blank at this point, right?
         if (_private.country.trim() === '')
           throw new EBANX.errors.InvalidConfigurationError('Missing country.', 'country');
-
         return _private.country;
       }
     };
   })();
 
   if ($public.config.isLive() && location.protocol !== 'https:') {
+    // Here I would consider using a custom error like: http://stackoverflow.com/questions/783818/how-do-i-create-a-custom-error-in-javascript
+    // I would also rephrase the error message to state: HTTPS required to use EBANXJS in production mode.
     throw 'EBANXInvalidConfigurationError: Your protocol needs to be https.';
   }
 
@@ -72,7 +76,7 @@ EBANX.errors = (function () {
 })();
 
 /**
- * Protected module validator - utils to validate objects data
+ * Protected module validator - utils to validate objects data -> maybe rephrase to: 'validation functions'
  * @module EBANX/validator
  * @namespace EBANX/validator
  * @protected
@@ -86,7 +90,7 @@ EBANX.validator = (function () {
      */
     config: {
       /**
-       * Validate if the publishable key is validator
+       * Validate if the publishable key is validator reprhase to: Validate if publishable key is valid
        * @param  {string}   key The publishable merchant key
        * @param  {Function} cb  The callback
        * @return {void}
@@ -108,7 +112,7 @@ EBANX.validator = (function () {
       },
       /**
        *
-       * @function validateCountry - validate the transaction country
+       * @function validateCountry - validate the transaction country -> rephrase to: validate country (not specific to transaction, right?)
        * @param {string} country - transaction country to validate
        * @throws {EBANX.errors.InvalidValueFieldError} case country is not valid
        *
@@ -140,8 +144,8 @@ EBANX.validator = (function () {
       /**
        *
        * @function validateNumber - validate a card number
-       * @param {number} number - Number of card to validate.
-       * @throws {EBANX.errors.InvalidValueFieldError} case card number is not valid
+       * @param {number} number - Number of card to validate. rephrase to: Card number to validatge
+       * @throws {EBANX.errors.InvalidValueFieldError} case card number is not valid rephrase to: @throws {EBANX.errors.InvalidValueFieldError} if card number is not valid
        *
        * @return {void}
        */
@@ -151,9 +155,9 @@ EBANX.validator = (function () {
           throw new EBANX.errors.InvalidValueFieldError('Invalid card number.', 'card_number');
       },
       /**
-       * @function validateName - validate the credit card name
-       * @param  {string} name Name of the credit card
-       * @throws {EBANX.errors.InvalidValueFieldError} case name isn't string and doesn't have length
+       * @function validateName - validate the credit card name reprhase to: validate credit card name
+       * @param  {string} name Name of the credit card reprhase to: credit card name
+       * @throws {EBANX.errors.InvalidValueFieldError} case name isn't string and doesn't have length rephrase to: {EBANX.errors.InvalidValueFieldError} if name is not a string or name is empty
        *
        * @return {void}
        */
@@ -166,7 +170,7 @@ EBANX.validator = (function () {
        *
        * @function luhnAlgCheck - luhn algorithm
        * @see https://en.wikipedia.org/wiki/Luhn_algorithm
-       * @param {string} cardNumber - Number of card to apply alg.
+       * @param {string} cardNumber - Number of card to apply alg. rephrase to: @param {string} cardNumber card number to check
        *
        * @return {boolean} true if valid false if not valid
        */
@@ -179,9 +183,9 @@ EBANX.validator = (function () {
       },
       /**
        *
-       * @function validateCvv - validate a card cvv
-       * @param {number} cvv - Cvv of card to validate.
-       * @throws {EBANX.errors.InvalidValueFieldError} case card cvv is not valid
+       * @function validateCvv - validate a card cvv rephrase to: validate card cvv
+       * @param {number} cvv - Cvv of card to validate. rephrase to: card cvv to validate
+       * @throws {EBANX.errors.InvalidValueFieldError} case card cvv is not valid rephrase to if card cvv is not valid
        *
        * @return {void}
        */
@@ -210,10 +214,10 @@ EBANX.validator = (function () {
         };
 
         if (((/^\d+$/).test(date.month)) !== true || (parseInt(date.month, 10) <= 12) !== true) {
-          throw new EBANX.errors.InvalidValueFieldError('Invalid month to card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid month on card due date.', 'card_due_date');
         }
         if (!(/^\d+$/).test(date.year)) {
-          throw new EBANX.errors.InvalidValueFieldError('Invalid year to card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('Invalid year on card due date.', 'card_due_date');
         }
 
         date.expiration = new Date(date.year, date.month);
@@ -287,10 +291,14 @@ EBANX.utils = (function () {
     api: {
       path: (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/')
     },
+    //maybe we should already put all possible countries here to avoid having to force an upgrate just to add a country.
     availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
+
+      // missing mastercard new bin, please take a look at: https://github.com/ebanx/pay/blob/d3629fd2b51b41389cdbdc7a577d9f7fb7ec7556/web/inc/bbp/cards/cardutil.php#L172-L183
+      // maybe we should let the user go along even with undetermined scheme, lets talk :)
       let schemes = {
         amex: /^3[47][0-9]{13}$/,
         aura: /^50[0-9]{14,17}$/,
