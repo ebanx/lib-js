@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         entry: "./src/ebanx.js",
         output: {
           filename: "./dist/ebanx.js",
-          library: "Ebanx",
+          library: "EBANX",
           libraryTarget: "umd",
           umdNamedDefine: "true"
         },
@@ -58,15 +58,16 @@ module.exports = function(grunt) {
       all: {
         options: {
           urls: [
-            'http://localhost:8000/test/qunit/integration/card/create-token.html'
-          ]
+            'http://localhost:8008/test/qunit/integration/card/create-token.html'
+          ],
+          timeout: 20000
         }
       }
     },
     connect: {
       server: {
         options: {
-          port: 8000,
+          port: 8008,
           base: '.'
         }
       }
@@ -83,4 +84,5 @@ module.exports = function(grunt) {
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('test', ['connect', 'qunit']);
   grunt.registerTask('default', ['webpack', 'connect', 'qunit']);
+  grunt.registerTask('build', ['webpack']);
 };
