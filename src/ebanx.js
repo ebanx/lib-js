@@ -41,10 +41,19 @@ const EBANX = (function () {
         return _private.publicKey;
       },
       getCountry: function () {
-        if (_private.country.trim() === '')
-          throw new EBANX.errors.InvalidConfigurationError('Missing country.', 'country');
+        if (!_private.country) {
+          _private.country = 'br';
+        }
 
         return _private.country;
+      },
+      getLocale: function () {
+        const countryLocale = {
+          'br': 'pt_BR',
+          'mx': 'es'
+        };
+
+        return countryLocale[EBANX.config.getCountry()];
       }
     };
   })();
@@ -58,13 +67,37 @@ const EBANX = (function () {
 
 EBANX.errors = (function () {
   return {
+    summary: {
+      'pt_BR': {
+        'BP-DR-76': `País não informado.`,
+        'BP-DR-77': `País não permitido.`,
+        'BP-DR-75': 'O número do cartão de crédito é inválido.',
+        'BP-DR-S-75': 'A bandeira do cartão de crédito é inválida.',
+        'BP-DR-51': 'Insira o nome que está impresso no cartão de crédito.',
+        'BP-DR-55': 'O código do cartão de crédito é inválido.',
+        'BP-DR-57': 'A data do cartão de crédito deve estar no formato mes/ano, por exemplo, 12/2020.',
+        'BP-DR-M-57': 'O mês data do cartão de crédito é inválido.',
+        'BP-DR-Y-57': 'O ano data do cartão de crédito é inválido.'
+      },
+      'es': {
+        'BP-DR-76': `País não informado.`,
+        'BP-DR-77': `País não permitido.`,
+        'BP-DR-75': 'El número de tarjeta de crédito es inválido.',
+        'BP-DR-S-75': 'El bandera de tarjeta de crédito es inválido.',
+        'BP-DR-51': 'Por favor, introduce el nombre como está en tu tarjeta de crédito.',
+        'BP-DR-55': 'El código de tarjeta de crédito es inválido.',
+        'BP-DR-57': 'Por favor, escribe la fecha en el formato MM/AAAA.',
+        'BP-DR-M-57': 'El mes de tarjeta de crédito es inválido.',
+        'BP-DR-Y-57': 'El año de tarjeta de crédito es inválido.'
+      }
+    },
     InvalidValueFieldError: function (message, field) {
-      this.message = message;
+      this.message = EBANX.errors.summary[EBANX.config.getLocale()][message] || message;
       this.field = field;
       this.name = 'InvalidValueFieldError';
     },
     InvalidConfigurationError: function (message, config) {
-      this.message = message;
+      this.message = EBANX.errors.summary[EBANX.config.getLocale()][message] || message;
       this.invalidConfiguration = config;
       this.name = 'InvalidConfigurationError';
     }
@@ -115,8 +148,9 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validateCountry: function (country) {
-        if (EBANX.utils.availableCountries.indexOf(country) === -1)
-          throw new EBANX.errors.InvalidValueFieldError(`Invalid transaction country. You can use one of them: ${EBANX.utils.availableCountries}.`, 'country');
+        if (EBANX.utils.availableCountries.indexOf(country) === -1) {
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-77', 'country');
+        }
       },
       /**
        * Validate if mode is "test" or "production"
@@ -148,7 +182,7 @@ EBANX.validator = (function () {
       validateNumber: function (number) {
         var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
         if (!regex.test(number) || !this.luhnAlgCheck(String(number)))
-          throw new EBANX.errors.InvalidValueFieldError('Invalid card number.', 'card_number');
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-75', 'card_number');
       },
       /**
        * @function validateName - validate the credit card name
@@ -159,7 +193,7 @@ EBANX.validator = (function () {
        */
       validateName: function (name) {
         if (typeof name !== 'string' || name.length === 0 || name.match(/[0-9]+/) !== null) {
-          throw new EBANX.errors.InvalidValueFieldError('The credit card name is required.');
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-51', 'card_name');
         }
       },
       /**
@@ -188,7 +222,7 @@ EBANX.validator = (function () {
       validateCvv: function (cvv) {
         var regex = new RegExp('^[0-9]{3,4}$');
         if (!regex.test(cvv))
-          throw new EBANX.errors.InvalidValueFieldError('Invalid card cvv.', 'card_cvv');
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-55', 'card_cvv');
       },
       /**
        *
@@ -210,10 +244,10 @@ EBANX.validator = (function () {
         };
 
         if (((/^\d+$/).test(date.month)) !== true || (parseInt(date.month, 10) <= 12) !== true) {
-          throw new EBANX.errors.InvalidValueFieldError('Invalid month to card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-M-57', 'card_due_date');
         }
         if (!(/^\d+$/).test(date.year)) {
-          throw new EBANX.errors.InvalidValueFieldError('Invalid year to card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-Y-57', 'card_due_date');
         }
 
         date.expiration = new Date(date.year, date.month);
@@ -222,7 +256,7 @@ EBANX.validator = (function () {
         date.expiration.setMonth(date.expiration.getMonth() + 1, 1);
 
         if ((date.expiration > date.now) !== true) {
-          throw new EBANX.errors.InvalidValueFieldError('Invalid card due date.', 'card_due_date');
+          throw new EBANX.errors.InvalidValueFieldError('BP-DR-57', 'card_due_date');
         }
       },
       /**
@@ -289,7 +323,7 @@ EBANX.utils = (function () {
         return (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/');
       }
     },
-    availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
+    availableCountries: ['br', 'mx'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
@@ -310,7 +344,7 @@ EBANX.utils = (function () {
         }
       }
 
-      throw new EBANX.errors.InvalidValueFieldError('Credit card scheme not found.', 'card_number');
+      throw new EBANX.errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
     }
   };
 
@@ -507,9 +541,6 @@ EBANX.card = (function () {
       EBANX.validator.card.validate(cardData);
       EBANX.tokenize.card.token(cardData, tokenSuccess, tokenError);
     } catch (e) {
-      if (e instanceof EBANX.errors.InvalidValueFieldError) {
-        // TODO: i18n
-      }
       response.error.err = e;
 
       createTokenCallback(response);
