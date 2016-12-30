@@ -285,7 +285,9 @@ EBANX.tokenize = (function () {
 EBANX.utils = (function () {
   const utilsModule = {
     api: {
-      path: (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/')
+      path: () => {
+        return (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/');
+      }
     },
     availableCountries: ['br', 'cl', 'co', 'mx', 'pe'].join(', '),
     creditCardScheme: function (cardNumber) {
@@ -312,7 +314,7 @@ EBANX.utils = (function () {
     }
   };
 
-  utilsModule.api.url = utilsModule.api.path + 'ws';
+  utilsModule.api.url = utilsModule.api.path() + 'ws';
 
   utilsModule.api.resources = {
     createToken: {
@@ -324,11 +326,11 @@ EBANX.utils = (function () {
       method: 'get'
     },
     fingerPrintResource: {
-      url: `${utilsModule.api.path}fingerprint/`,
+      url: `${utilsModule.api.path()}fingerprint/`,
       method: 'get'
     },
     fingerPrintProvidersResource: {
-      url: `${utilsModule.api.path}fingerprint/provider`,
+      url: `${utilsModule.api.path()}fingerprint/provider`,
       method: 'post'
     }
   };
@@ -538,7 +540,7 @@ EBANX.deviceFingerprint = (function () {
         iframe.height = 1;
         iframe.frameborder = 0;
         iframe.scrolling = 'no';
-        iframe.src = `${EBANX.utils.api.path}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
+        iframe.src = `${EBANX.utils.api.path()}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
         iframe.style.border = 0;
         iframe.style.position = 'absolute';
         iframe.style.top = '-200px';
