@@ -125,7 +125,7 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validatePublishableKey: function (key, cb) {
-        const publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey;
+        const publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey();
 
         EBANX.http.ajax
           .request({
@@ -284,7 +284,7 @@ EBANX.tokenize = (function () {
   return {
     card: {
       token: function (cardData, cb, errorCallback) {
-        const tokenResource = EBANX.utils.api.resources.createToken;
+        const tokenResource = EBANX.utils.api.resources.createToken();
 
         EBANX.http.ajax.request({
           url: tokenResource.url,
@@ -348,24 +348,34 @@ EBANX.utils = (function () {
     }
   };
 
-  utilsModule.api.url = utilsModule.api.path() + 'ws';
+  utilsModule.api.url = () => {
+    return utilsModule.api.path() + 'ws';
+  };
 
   utilsModule.api.resources = {
-    createToken: {
-      url: `${utilsModule.api.url}/token`,
-      method: 'get'
+    createToken: () => {
+      return {
+        url: `${utilsModule.api.url()}/token`,
+        method: 'get'
+      };
     },
-    validPublicIntegrationKey: {
-      url: `${utilsModule.api.url}/merchantIntegrationProperties/isValidPublicIntegrationKey`,
-      method: 'get'
+    validPublicIntegrationKey: () => {
+      return {
+        url: `${utilsModule.api.url()}/merchantIntegrationProperties/isValidPublicIntegrationKey`,
+        method: 'get'
+      };
     },
-    fingerPrintResource: {
-      url: `${utilsModule.api.path()}fingerprint/`,
-      method: 'get'
+    fingerPrintResource: () => {
+      return {
+        url: `${utilsModule.api.path()}fingerprint/`,
+        method: 'get'
+      };
     },
-    fingerPrintProvidersResource: {
-      url: `${utilsModule.api.path()}fingerprint/provider`,
-      method: 'post'
+    fingerPrintProvidersResource: () => {
+      return {
+        url: `${utilsModule.api.path()}fingerprint/provider`,
+        method: 'post'
+      };
     }
   };
 
@@ -648,7 +658,7 @@ EBANX.deviceFingerprint = (function () {
   };
 
   _private.getList = function (cb) {
-    const fingerPrintResource = EBANX.utils.api.resources.fingerPrintResource;
+    const fingerPrintResource = EBANX.utils.api.resources.fingerPrintResource();
 
     EBANX.http.ajax
       .request({
@@ -681,7 +691,7 @@ EBANX.deviceFingerprint = (function () {
     clearTimeout(_private.providerPostPending);
     _private.providerPostPending = null;
 
-    const fingerPrintProvidersResource = EBANX.utils.api.resources.fingerPrintProvidersResource;
+    const fingerPrintProvidersResource = EBANX.utils.api.resources.fingerPrintProvidersResource();
 
     EBANX.http.ajax
       .request({
