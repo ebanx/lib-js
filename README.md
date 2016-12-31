@@ -16,7 +16,7 @@ Find more information in our [Dev Academy](https://www.ebanx.com/business/en/dev
 ```javascript
 EBANX.config.setMode('sandbox'); // Set mode. production/test
 EBANX.config.setPublishableKey('put your key here'); // Set your Publishable key. To identify your site to EBANX API you must start by providing your [publishable key](https://developers.ebanx.com/merchant-area/merchant-options).
-EBANX.config.setCountry('br'); // Set your checkout country (see: https://en.wikipedia.org/wiki/ISO_3166-1).
+EBANX.config.setCountry('br'); // Set your checkout country (Alpha-2) (see: https://en.wikipedia.org/wiki/ISO_3166-1).
 ```
 
 This is all. Use: 
