@@ -1,20 +1,20 @@
-# EBANX JS CHECKOUT V1.0.0
+# Lib JS  V1.4
 
-[![Build Status](https://travis-ci.com/ebanx/checkout-js.svg?token=fnHBQhvUoN1zMVexkAyq&branch=master)](https://travis-ci.com/ebanx/checkout-js)
+Lib JS makes it easy to collect [payments in Brazil, Mexico, Chile, Colombia, Peru](https://www.ebanx.com/business/en/), using local currencies and payment methods in an easy and secure way. If you need help please reach us at <developer support channel here>.
 
-EBANX JS CHECKOUT makes it easy to collect [payments in Brazil, Mexico, Chile, Colombia, Peru](), using local currencies and payment methods in an easy and secure way. If you need help please reach us at <developer support channel here>.
+Find more information in our [Dev Academy](https://www.ebanx.com/business/en/developers/integrations/lib-js).
 
-## Start using EBANXCheckout.js
+## Start using EBANX Lib JS
 
 ### 1. Add this script to your page:
 
 ```html
-<script type="text/javascript" src="https://js.ebanx.com/"></script>
+<script type="text/javascript" src="https://js.ebanx.com/ebanx-1.4.min.js/"></script>
 ```
 ### 2. Config
 
 ```javascript
-EBANX.config.setMode('test'); // Set mode. production/test
+EBANX.config.setMode('sandbox'); // Set mode. production/test
 EBANX.config.setPublishableKey('put your key here'); // Set your Publishable key. To identify your site to EBANX API you must start by providing your [publishable key](https://developers.ebanx.com/merchant-area/merchant-options).
 EBANX.config.setCountry('br'); // Set your checkout country (see: https://en.wikipedia.org/wiki/ISO_3166-1).
 ```
@@ -44,4 +44,4 @@ EBANX.card.createToken({
 
 ## Notes
 
-- [x] EBANX Checkout JS Only works on HTTPS; 
+- [x] EBANX Checkout JS Only works on HTTPS;
