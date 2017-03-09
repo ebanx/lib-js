@@ -649,11 +649,17 @@ EBANX.deviceFingerprint = (function () {
         });
       },
       loadJs: function (cb) {
-        EBANX.http.injectJS('https://code.jquery.com/jquery-2.2.0.min.js', () => {
+        let cbLoadJquery = () => {
           EBANX.http.injectJS(`${this.cdnUrl}openpay.v1.min.js`, () => {
             EBANX.http.injectJS(`${this.cdnUrl}openpay-data.v1.min.js`, cb);
           });
-        });
+        };
+
+        if (window.top.jQuery === undefined) {
+          EBANX.http.injectJS('https://code.jquery.com/jquery-2.2.0.min.js', cbLoadJquery);
+        } else {
+          cbLoadJquery();
+        }
       }
     }
   };
