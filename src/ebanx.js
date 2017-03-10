@@ -221,7 +221,7 @@ EBANX.validator = (function () {
        */
       validateCvv: function (cvv) {
         var regex = new RegExp('^[0-9]{3,4}$');
-        if (!typeof cvv === 'string' || !cvv instanceof String || !cvv.toString().match(regex)) {
+        if (typeof cvv !== 'string' || !(cvv instanceof String) || !(cvv.toString().match(regex))) {
           throw new EBANX.errors.InvalidValueFieldError('BP-DR-55', 'card_cvv');
         }
       },
@@ -581,10 +581,11 @@ EBANX.deviceFingerprint = {
   },
 
   getList: function (cb) {
-    EBANX.http.ajax.request(EBANX.utils.api.resouces.fingerPrintResource().url, {
-      publicIntegrationKey: EBANX.config.getPublishableKey(),
-      country: EBANX.config.getCountry()
-    }, cb, 'json');
+    EBANX.http.ajax.request({
+      url: EBANX.utils.api.resouces.fingerPrintResource().url,
+      json: true
+    })
+    .always(cb);
   },
 
   getProviderSessionId: function (provider) {
