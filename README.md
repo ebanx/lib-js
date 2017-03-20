@@ -1,4 +1,4 @@
-# Lib JS  V1.4
+# Lib JS  V1.5
 
 Lib JS makes it easy to collect [payments in Brazil, Mexico, Chile, Colombia, Peru](https://www.ebanx.com/business/en/), using local currencies and payment methods in an easy and secure way. If you need help please reach us at <developer support channel here>.
 
@@ -9,7 +9,7 @@ Find more information in our [Dev Academy](https://www.ebanx.com/business/en/dev
 ### 1. Add this script to your page:
 
 ```html
-<script type="text/javascript" src="https://js.ebanx.com/ebanx-1.4.min.js/"></script>
+<script type="text/javascript" src="https://js.ebanx.com/ebanx-1.5.min.js/"></script>
 ```
 ### 2. Config
 
@@ -19,7 +19,7 @@ EBANX.config.setPublishableKey('put your key here'); // Set your Publishable key
 EBANX.config.setCountry('br'); // Set your checkout country (Alpha-2) (see: https://en.wikipedia.org/wiki/ISO_3166-1).
 ```
 
-This is all. Use: 
+This is all. Use:
 
 #### card.createToken
 
