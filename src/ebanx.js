@@ -582,7 +582,11 @@ EBANX.deviceFingerprint = {
 
   getList: function (cb) {
     EBANX.http.ajax.request({
-      url: EBANX.utils.api.resouces.fingerPrintResource().url,
+      url: EBANX.utils.api.resources.fingerPrintResource().url,
+      data: {
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
+          country: EBANX.config.getCountry()
+      },
       json: true
     })
     .always(cb);
@@ -619,7 +623,8 @@ EBANX.deviceFingerprint = {
     EBANX.http.ajax.request({
       url: EBANX.utils.api.resources.fingerPrintProvidersResource().url,
       data: data,
-      method: "post"
+      method: "post",
+      json: true
     });
   },
 
