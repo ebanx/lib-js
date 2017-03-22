@@ -221,7 +221,7 @@ EBANX.validator = (function () {
        */
       validateCvv: function (cvv) {
         var regex = new RegExp('^[0-9]{3,4}$');
-        if (typeof cvv !== 'string' || !(cvv instanceof String) || !(cvv.toString().match(regex))) {
+        if (!(new String(cvv)).match(regex)) {
           throw new EBANX.errors.InvalidValueFieldError('BP-DR-55', 'card_cvv');
         }
       },
