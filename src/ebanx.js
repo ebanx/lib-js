@@ -561,174 +561,83 @@ EBANX.card = (function () {
   return $public;
 })();
 
-EBANX.deviceFingerprint = (function () {
-  const $public = {};
-  const _private = {
-    ebanx_session_id: null,
-    providerSessionList: [],
-    providerPostPending: null
-  };
+EBANX.deviceFingerprint = {
+  ebanx_session_id: null,
+  providerSessionList: [],
+  providerPostPending: null,
 
-  _private.providers = {
-    kount: {
-      setup: function (settings, cb) {
-        this.build(settings);
-        cb(_private.ebanx_session_id);
-      },
-      build: function (settings) {
-        let d = document;
-        let iframe = d.createElement('iframe');
-        iframe.width = 1;
-        iframe.height = 1;
-        iframe.frameborder = 0;
-        iframe.scrolling = 'no';
-        iframe.src = `${EBANX.utils.api.path()}fingerprint/kount?m=${settings.merchant_id}&s=${_private.ebanx_session_id}`;
-        iframe.style.border = 0;
-        iframe.style.position = 'absolute';
-        iframe.style.top = '-200px';
-        iframe.style.left = '-200px';
-        d.getElementsByTagName('body')[0].appendChild(iframe);
-      }
-    },
-    mercadopago: {
-      setup: function (settings, cb) {
-        cb(this._mpGetDeviceID());
-      },
-      _mpGuid: function() {
-        function a() {
-          return Math.floor(65536 * (1 + Math.random())).toString(16).substring(1);
-        }
-        return a() + a() + '-' + a() + '-' + a() + '-' + a() + '-' + a() + a() + a();
-      },
-      _mpGetDeviceID: function() {
-        var a = this._mpGuid();
-        var c = function(a, b, c) {
-          var d, e, f, g, h = b || {}, i = c || {};
-          h.type = 'application/x-shockwave-flash';
-          if (window.ActiveXObject) {
-            h.classid = 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000';
-            i.movie = a;
-          } else h.data = a;
-          e = '<object';
-          for (d in h) e += ' ' + d + '="' + h[d] + '"';
-          e += '>';
-          for (d in i) e += '<param name="' + d + '" value="' + i[d] + '" />';
-          e += '</object>';
-          f = document.createElement('div');
-          f.innerHTML = e;
-          g = f.firstChild;
-          f.removeChild(g);
-          return g;
-        };
-        new Image().src = 'https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=' + a + '&m=1';
-        new Image().src = 'https://content.mercadopago.com/fp/clear.png?org_id=jk96mpy0&session_id=' + a + '&m=2';
-        var d = document.createElement('script');
-        d.type = 'text/javascript';
-        d.src = 'https://content.mercadopago.com/fp/check.js?org_id=jk96mpy0&session_id=' + a;
-        document.body.appendChild(d);
-        var e = c('https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=' + a, {
-          id: 'obj_id',
-          width: 1,
-          height: 1
-        }, {
-          movie: 'https://content.mercadopago.com/fp/fp.swf?org_id=jk96mpy0&session_id=' + a
-        });
-        document.body.appendChild(e);
-        return a;
-      }
-    },
-    openpay: {
-      cdnUrl: 'https://openpay.s3.amazonaws.com/',
-      setup: function (settings, cb) {
-        this.loadJs(() => {
-          OpenPay.setId(settings.id);
-          OpenPay.setApiKey(settings.apiKey);
-          OpenPay.setSandboxMode(settings.sandboxMode);
-
-          cb(OpenPay.deviceData.setup());
-        });
-      },
-      loadJs: function (cb) {
-        EBANX.http.injectJS('https://code.jquery.com/jquery-2.2.0.min.js', () => {
-          EBANX.http.injectJS(`${this.cdnUrl}openpay.v1.min.js`, () => {
-            EBANX.http.injectJS(`${this.cdnUrl}openpay-data.v1.min.js`, cb);
-          });
-        });
-      }
-    }
-  };
-
-  _private.getList = function (cb) {
-    const fingerPrintResource = EBANX.utils.api.resources.fingerPrintResource();
-
-    EBANX.http.ajax
-      .request({
-        json: true,
-        url: fingerPrintResource.url,
-        method: fingerPrintResource.method,
-        data: {
-          country: EBANX.config.getCountry(),
-          publicIntegrationKey: EBANX.config.getPublishableKey()
-        }
-      })
-      .always(function (res) {
-        cb(res);
-      });
-  };
-
-  _private.saveProviderSessionList = function (providerSession) {
-    if (_private.providerPostPending) {
-      clearTimeout(_private.providerPostPending);
-    }
-
-    _private.providerSessionList.push(providerSession);
-    _private.providerPostPending = setTimeout(_private.postProviderSessionList, 1000);
-  };
-
-  _private.postProviderSessionList = function () {
-    let providers = _private.providerSessionList;
-    _private.providerSessionList = [];
-
-    clearTimeout(_private.providerPostPending);
-    _private.providerPostPending = null;
-
-    const fingerPrintProvidersResource = EBANX.utils.api.resources.fingerPrintProvidersResource();
-
-    EBANX.http.ajax
-      .request({
-        url: fingerPrintProvidersResource.url,
-        method: fingerPrintProvidersResource.method,
-        data: {
-          publicIntegrationKey: EBANX.config.getPublishableKey(),
-          ebanx_session_id: _private.ebanx_session_id,
-          providers: providers
-        }
-      })
-      .always(function () {
+  setup: function (cb) {
+    var self = this;
+    this.getList(function (list) {
+      if (!(list && list.ebanx_session_id))
         return;
-      });
-  };
 
-  $public.setup = function (cb) {
-    _private.getList(function (list) {
-      if (!(list && list.ebanx_session_id)) return; // TODO: how do in this case?
-
-      _private.ebanx_session_id = list.ebanx_session_id;
-
+      EBANX.deviceFingerprint.ebanx_session_id = list.ebanx_session_id;
       cb(list.ebanx_session_id);
+      list.providers.forEach(function (provider) {
+        self.getProviderSessionId(provider);
+      });
+    });
+  },
 
-      list.providers.forEach(function (data) {
-        _private.providers[data.provider].setup(data.settings, function (session_id) {
-          _private.saveProviderSessionList({
-            provider: data.provider,
-            session_id: session_id
-          });
+  getList: function (cb) {
+    EBANX.http.ajax.request({
+      url: EBANX.utils.api.resources.fingerPrintResource().url,
+      data: {
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
+          country: EBANX.config.getCountry()
+      },
+      json: true
+    })
+    .always(cb);
+  },
+
+  getProviderSessionId: function (provider) {
+    this.loadProvider(provider, this.saveProviderSessionList);
+  },
+
+  saveProviderSessionList: function (providerSession) {
+    var self = EBANX.deviceFingerprint;
+    if (self.providerPostPending) {
+      clearTimeout(self.providerPostPending);
+    }
+
+    self.providerSessionList.push(providerSession);
+    self.providerPostPending = setTimeout(self.postProviderSessionList, 1000);
+  },
+
+  postProviderSessionList: function () {
+    var self = EBANX.deviceFingerprint;
+    var providers = self.providerSessionList;
+    self.providerSessionList = [];
+
+    clearTimeout(self.providerPostPending);
+    self.providerPostPending = null;
+
+    var data = {
+      publicIntegrationKey: EBANX.config.getPublishableKey(),
+      ebanx_session_id: self.ebanx_session_id,
+      providers: providers
+    };
+
+    EBANX.http.ajax.request({
+      url: EBANX.utils.api.resources.fingerPrintProvidersResource().url,
+      data: data,
+      method: "post",
+      json: true
+    });
+  },
+
+  loadProvider: function (data, cb) {
+    EBANX.http.injectJS(data.source, function () {
+      EBANX.deviceFingerprint[data.provider].setup(data.settings, function (session_id) {
+        cb({
+          provider: data.provider,
+          session_id: session_id
         });
       });
     });
-  };
-
-  return $public;
-})();
+  }
+};
 
 module.exports = EBANX;
