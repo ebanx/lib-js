@@ -11,12 +11,12 @@ EBANX JS CHECKOUT makes it easy to collect [payments in Brazil, Mexico, Chile, C
 ```html
 <script type="text/javascript" src="https://js.ebanx.com/"></script>
 ```
-### 2. Set your Publishable key.
-
-To identify your site to EBANX API you must start by providing your [publishable key](https://developers.ebanx.com/merchant-area/merchant-options).
+### 2. Config
 
 ```javascript
-EBANX.config.setPublishableKey('put your key here');
+EBANX.config.setMode('test'); // Set mode. production/test
+EBANX.config.setPublishableKey('put your key here'); // Set your Publishable key. To identify your site to EBANX API you must start by providing your [publishable key](https://developers.ebanx.com/merchant-area/merchant-options).
+EBANX.config.setCountry('br'); // Set your checkout country (see: https://en.wikipedia.org/wiki/ISO_3166-1).
 ```
 
 ### 3. Create a credit card request
@@ -79,7 +79,6 @@ EBANX.card.prepareRequest({
 }, createTokenCallback);
 ```
 
-
 ## Notes
 
-- [x] EBANX Checkout JS Only works on HTTPS;
+- [x] EBANX Checkout JS Only works on HTTPS; 
