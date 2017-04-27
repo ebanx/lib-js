@@ -221,7 +221,7 @@ EBANX.validator = (function () {
        */
       validateCvv: function (cvv) {
         var regex = new RegExp('^[0-9]{3,4}$');
-        if (!(new String(cvv)).match(regex)) {
+        if (!String(cvv).match(regex)) {
           throw new EBANX.errors.InvalidValueFieldError('BP-DR-55', 'card_cvv');
         }
       },
@@ -329,20 +329,37 @@ EBANX.utils = (function () {
       EBANX.validator.card.validateNumber(cardNumber);
 
       let schemes = {
-        amex: /^3[47][0-9]{13}$/,
-        aura: /^50[0-9]{14,17}$/,
-        elo: /^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)/,
-        diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
-        discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
-        hipercard: /^(38|60)[0-9]{11,17}$/,
-        mastercard: /^5[1-5][0-9]{14}$/,
-        visa: /^4[0-9]{12}(?:[0-9]{3})?$/
+        br: {
+          amex: /^3[47][0-9]{13}$/,
+          aura: /^50[0-9]{14,17}$/,
+          elo: /^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)/,
+          diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+          discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+          hipercard: /^(38|60)[0-9]{11,17}$/
+        },
+        mx: {
+          carnet: /^5[6-9][0-9]{14}$/,
+          mastercard__2: /^2[2-7][0-9]{14}$/
+        },
+        all: {
+          mastercard: /^5[1-5][0-9]{14}$/,
+          visa: /^4[0-9]{12}(?:[0-9]{3})?$/
+        }
       };
 
-      for (let scheme in schemes) {
-        if (schemes[scheme].test(cardNumber)) {
-          return scheme;
+      let localSchemes = Object.assign({}, schemes[EBANX.config.getCountry()], schemes.all);
+
+      for (let scheme in localSchemes) {
+        if (!schemes[scheme].test(cardNumber))
+          continue;
+
+        let result = scheme;
+        let separatorIndex = scheme.indexOf('__');
+        if (separatorIndex !== -1) {
+          result = scheme.substr(0, separatorIndex);
         }
+
+        return result;
       }
 
       throw new EBANX.errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
