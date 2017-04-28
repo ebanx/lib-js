@@ -350,7 +350,7 @@ EBANX.utils = (function () {
       let localSchemes = Object.assign({}, schemes[EBANX.config.getCountry()], schemes.all);
 
       for (let scheme in localSchemes) {
-        if (!schemes[scheme].test(cardNumber))
+        if (!localSchemes[scheme].test(cardNumber))
           continue;
 
         let result = scheme;
