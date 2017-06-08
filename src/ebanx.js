@@ -108,6 +108,10 @@ EBANX.errors = (function () {
  * @protected
  */
 EBANX.validator = (function () {
+  const cachedResults = {
+    publicKey: {}
+  };
+
   return {
     /**
      * @memberof EBANX/validator
@@ -124,6 +128,11 @@ EBANX.validator = (function () {
       validatePublishableKey: function (key, cb) {
         const publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey();
 
+        if (cachedResults.publicKey[key]) {
+          cb(cachedResults.publicKey[key]);
+          return;
+        }
+
         EBANX.http.ajax
           .request({
             url: publicKeyResource.url,
@@ -133,6 +142,7 @@ EBANX.validator = (function () {
             }
           })
           .always(function (res) {
+            cachedResults.publicKey[key] = res;
             cb(res);
           });
       },
