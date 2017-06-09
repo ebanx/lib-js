@@ -16,10 +16,7 @@ const EBANX = (function () {
         return _private.mode === 'production';
       },
       setPublishableKey: function (key) {
-        EBANX.validator.config.validatePublishableKey(key, function () {
-          // TODO: Implement a validation to check if the key is really valid
-          _private.publicKey = String(key);
-        });
+        _private.publicKey = String(key);
       },
       setCountry: function (country) {
         EBANX.validator.config.validateCountry(country);
@@ -111,6 +108,10 @@ EBANX.errors = (function () {
  * @protected
  */
 EBANX.validator = (function () {
+  const cachedResults = {
+    publicKey: {}
+  };
+
   return {
     /**
      * @memberof EBANX/validator
@@ -127,6 +128,11 @@ EBANX.validator = (function () {
       validatePublishableKey: function (key, cb) {
         const publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey();
 
+        if (cachedResults.publicKey[key]) {
+          cb(cachedResults.publicKey[key]);
+          return;
+        }
+
         EBANX.http.ajax
           .request({
             url: publicKeyResource.url,
@@ -136,6 +142,7 @@ EBANX.validator = (function () {
             }
           })
           .always(function (res) {
+            cachedResults.publicKey[key] = res;
             cb(res);
           });
       },
@@ -566,8 +573,23 @@ EBANX.card = (function () {
     };
 
     try {
-      EBANX.validator.card.validate(cardData);
-      EBANX.tokenize.card.token(cardData, tokenSuccess, tokenError);
+      let key = EBANX.config.getPublishableKey();
+      EBANX.validator.config.validatePublishableKey(key, function (validatorResponseJson) {
+        let validatorResponse = JSON.parse(validatorResponseJson);
+
+        if (!validatorResponse.success) {
+          response.error.err = {
+            status: "ERROR",
+            status_code: "",
+            status_message: validatorResponse.body.error
+          };
+          createTokenCallback(response);
+          return;
+        }
+
+        EBANX.validator.card.validate(cardData);
+        EBANX.tokenize.card.token(cardData, tokenSuccess, tokenError);
+      });
     } catch (e) {
       response.error.err = e;
 
@@ -657,4 +679,5 @@ EBANX.deviceFingerprint = {
   }
 };
 
-module.exports = EBANX;
+//module.exports = EBANX;
+window.EBANX = EBANX;
