@@ -679,5 +679,4 @@ EBANX.deviceFingerprint = {
   }
 };
 
-//module.exports = EBANX;
-window.EBANX = EBANX;
+module.exports = EBANX;
