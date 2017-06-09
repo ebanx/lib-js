@@ -27,7 +27,7 @@ Creates a single use token used to pass credit-card information to your server i
 
 ```javascript
 EBANX.config.setMode('test');
-EBANX.config.setPublishableKey('pk_1231000');
+EBANX.config.setPublishableKey('YOUR KEY HERE');
 EBANX.config.setCountry('br');
 
 var createTokenCallback = function(ebanxResponse) {
