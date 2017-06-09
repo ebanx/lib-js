@@ -26,20 +26,29 @@ This is all. Use:
 Creates a single use token used to pass credit-card information to your server in a safe way.
 
 ```javascript
+EBANX.config.setMode('test');
+EBANX.config.setPublishableKey('pk_1231000');
+EBANX.config.setCountry('br');
+
 var createTokenCallback = function(ebanxResponse) {
-  if (ebanxResponse.error) {
-      document.getElementById('status').textContent = 'Error ' + ebanxResponse.error.message;
+  if (ebanxResponse.data.hasOwnProperty('status')) {
+      document.getElementById('status').textContent = 'Success, the token is: ' + ebanxResponse.data.token;
   } else {
-      document.getElementById('status').textContent = 'Success, the token is: ' + ebanxResponse.token;
+      var errorMessage = ebanxResponse.error.err.status_message || ebanxResponse.error.err.message;
+      document.getElementById('status').textContent = 'Error ' + errorMessage;
   }
 }
 
-EBANX.card.createToken({
-  card_number: document.getElementById('card-number').value,
-  card_name: document.getElementById('card-name').value,
-  card_due_date: document.getElementById('card-due-date').value,
-  card_cvv: document.getElementById('card-cvv').value
-}, createTokenCallback);
+// CUSTOMER CLICKS THE BUTTON
+function createToken() {
+  EBANX.card.createToken({
+    card_number: 4111111111111111,
+    card_name: 'Teste',
+    card_due_date: '02/2019',
+    card_cvv: '123'
+  }, createTokenCallback);
+}
+createToken();
 ```
 
 ## Notes
