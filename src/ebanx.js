@@ -572,29 +572,36 @@ EBANX.card = (function () {
       return createTokenCallback(response);
     };
 
+    let key = '';
+
     try {
-      let key = EBANX.config.getPublishableKey();
-      EBANX.validator.config.validatePublishableKey(key, function (validatorResponseJson) {
-        let validatorResponse = JSON.parse(validatorResponseJson);
-
-        if (!validatorResponse.success) {
-          response.error.err = {
-            status: "ERROR",
-            status_code: "",
-            status_message: validatorResponse.body.error
-          };
-          createTokenCallback(response);
-          return;
-        }
-
-        EBANX.validator.card.validate(cardData);
-        EBANX.tokenize.card.token(cardData, tokenSuccess, tokenError);
-      });
+      key = EBANX.config.getPublishableKey();
     } catch (e) {
       response.error.err = e;
-
       createTokenCallback(response);
     }
+
+    EBANX.validator.config.validatePublishableKey(key, function (validatorResponseJson) {
+      let validatorResponse = JSON.parse(validatorResponseJson);
+
+      if (!validatorResponse.success) {
+        response.error.err = {
+          status: "ERROR",
+          status_code: "",
+          status_message: validatorResponse.body.error
+        };
+        createTokenCallback(response);
+        return;
+      }
+
+      try {
+        EBANX.validator.card.validate(cardData);
+        EBANX.tokenize.card.token(cardData, tokenSuccess, tokenError);
+      } catch (e) {
+        response.error.err = e;
+        createTokenCallback(response);
+      }
+    });
   };
 
   return $public;
