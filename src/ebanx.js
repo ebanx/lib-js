@@ -331,7 +331,7 @@ EBANX.utils = (function () {
         return (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/');
       }
     },
-    availableCountries: ['br', 'mx'].join(', '),
+    availableCountries: ['br', 'mx', 'co'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
@@ -347,6 +347,10 @@ EBANX.utils = (function () {
         mx: {
           carnet: /^5[6-9][0-9]{14}$/,
           mastercard__2: /^2[2-7][0-9]{14}$/
+        },
+        co: {
+          amex: /^3[47][0-9]{13}$/,
+          diners: /^36[0-9]{12}$/
         },
         all: {
           mastercard: /^5[1-5][0-9]{14}$/,
