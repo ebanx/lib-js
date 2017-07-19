@@ -47,7 +47,8 @@ const EBANX = (function () {
       getLocale: function () {
         const countryLocale = {
           'br': 'pt_BR',
-          'mx': 'es'
+          'mx': 'es',
+          'co': 'es'
         };
 
         return countryLocale[EBANX.config.getCountry()];
