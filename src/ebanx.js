@@ -386,7 +386,7 @@ EBANX.utils = (function () {
     createToken: () => {
       return {
         url: `${utilsModule.api.url()}/token`,
-        method: 'get'
+        method: 'post'
       };
     },
     validPublicIntegrationKey: () => {
