@@ -5,9 +5,7 @@ node_modules/*
 trash/*
 test/nightwatch/screenshots/*
 test/nightwatch/reports/*
-selenium-debug.log
 results.txt
-npm-debug.log
 
 .DS_Store
 *.log
