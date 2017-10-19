@@ -1,12 +1,10 @@
 *-compiled*
 doc/*
 node_modules/*
-.idea
 trash/*
 test/nightwatch/screenshots/*
 test/nightwatch/reports/*
 results.txt
 
-.DS_Store
 *.log
 *.pid
