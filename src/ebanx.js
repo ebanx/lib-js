@@ -138,6 +138,7 @@ EBANX.validator = (function () {
           .request({
             url: publicKeyResource.url,
             method: publicKeyResource.method,
+            raw: true,
             data: {
               public_integration_key: key
             }
@@ -485,7 +486,7 @@ EBANX.http = (function () {
                 if(self.xhr.readyState == 4) {
                   var result = self.xhr.responseText || '{}';
 
-                  if(typeof JSON !== 'undefined') {
+                  if(typeof ops.raw == 'undefined' && typeof JSON !== 'undefined') {
                     result = JSON.parse(result);
                   }
 
