@@ -497,12 +497,13 @@ EBANX.http = (function () {
 
             if (ops.method.toUpperCase() == 'GET') {
               ops.url += `?${EBANX.http.normalize.q(ops.data)}`;
+              delete ops.data;
             }
 
             this.xhr.open(ops.method.toUpperCase(), ops.url, true);
 
             setTimeout(function() {
-              self.xhr.send();
+              self.xhr.send(ops.data);
             }, 20);
 
             return this;
