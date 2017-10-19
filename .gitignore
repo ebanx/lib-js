@@ -8,7 +8,6 @@ test/nightwatch/reports/*
 selenium-debug.log
 results.txt
 npm-debug.log
-selenium-debug.log
 
 .DS_Store
 *.log
