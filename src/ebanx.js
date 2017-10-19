@@ -298,21 +298,20 @@ EBANX.tokenize = (function () {
         EBANX.http.ajax.request({
           url: tokenResource.url,
           method: tokenResource.method,
-          json: true,
-          data: {
+          data: JSON.stringify({
             public_integration_key: EBANX.config.getPublishableKey(),
             payment_type_code: EBANX.utils.creditCardScheme(cardData.card_number),
             country: EBANX.config.getCountry(),
             card: cardData
-          }
+          })
         })
-          .always(function(result) {
-            if (result.status === 'ERROR' || !('token' in result)) {
-              return errorCallback(result);
-            }
+        .always(function(result) {
+          if (result.status === 'ERROR' || !('token' in result)) {
+            return errorCallback(result);
+          }
 
-            return cb(result);
-          });
+          return cb(result);
+        });
       }
     }
   };
@@ -486,7 +485,7 @@ EBANX.http = (function () {
                 if(self.xhr.readyState == 4) {
                   var result = self.xhr.responseText || '{}';
 
-                  if(ops.json === true && typeof JSON !== 'undefined') {
+                  if(typeof JSON !== 'undefined') {
                     result = JSON.parse(result);
                   }
 
@@ -495,7 +494,11 @@ EBANX.http = (function () {
               };
             }
 
-            this.xhr.open('GET', `${ops.url}?${EBANX.http.normalize.q(ops.data)}`, true);
+            if (ops.method.toUpperCase() == 'GET') {
+              ops.url += `?${EBANX.http.normalize.q(ops.data)}`;
+            }
+
+            this.xhr.open(ops.method.toUpperCase(), ops.url, true);
 
             setTimeout(function() {
               self.xhr.send();
@@ -635,8 +638,7 @@ EBANX.deviceFingerprint = {
       data: {
           publicIntegrationKey: EBANX.config.getPublishableKey(),
           country: EBANX.config.getCountry()
-      },
-      json: true
+      }
     })
     .always(cb);
   },
@@ -669,11 +671,12 @@ EBANX.deviceFingerprint = {
       providers: providers
     };
 
+    var resource = EBANX.utils.api.resources.fingerPrintProvidersResource();
+
     EBANX.http.ajax.request({
-      url: EBANX.utils.api.resources.fingerPrintProvidersResource().url,
-      data: data,
-      method: "post",
-      json: true
+      url: resource.url,
+      method: resource.method,
+      data: data
     });
   },
 
