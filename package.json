@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "EBANX.js implementation",
   "main": "",
-  "scripts": {},
+  "scripts": {
+    "build": "grunt"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/ebanx/js-form.git"
