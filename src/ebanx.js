@@ -300,12 +300,10 @@ EBANX.tokenize = (function () {
           method: tokenResource.method,
           json: true,
           data: {
-            request_body: JSON.stringify({
-              public_integration_key: EBANX.config.getPublishableKey(),
-              payment_type_code: EBANX.utils.creditCardScheme(cardData.card_number),
-              country: EBANX.config.getCountry(),
-              card: cardData
-            })
+            public_integration_key: EBANX.config.getPublishableKey(),
+            payment_type_code: EBANX.utils.creditCardScheme(cardData.card_number),
+            country: EBANX.config.getCountry(),
+            card: cardData
           }
         })
           .always(function(result) {
