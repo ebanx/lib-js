@@ -402,7 +402,7 @@ EBANX.utils = (function () {
     fingerPrintProvidersResource: () => {
       return {
         url: `${utilsModule.api.path()}fingerprint/provider`,
-        method: 'post'
+        method: 'get'
       };
     }
   };
