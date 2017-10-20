@@ -1,15 +1,1 @@
-*-compiled*
-doc/*
-node_modules/*
-.idea
-trash/*
-test/nightwatch/screenshots/*
-test/nightwatch/reports/*
-selenium-debug.log
-results.txt
-npm-debug.log
-selenium-debug.log
-
-.DS_Store
-*.log
-*.pid
+/node_modules
