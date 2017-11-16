@@ -333,6 +333,7 @@ EBANX.utils = (function () {
     availableCountries: ['br', 'mx', 'co'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
+
       let schemes = {
         br: {
           aura: /^50[0-9]{14,17}$/,
