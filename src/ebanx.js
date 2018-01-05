@@ -49,7 +49,7 @@ const EBANX = (function () {
           'br': 'pt_BR',
           'mx': 'es',
           'co': 'es',
-          'ar': 'es'
+          'ar': 'es',
         };
 
         return countryLocale[EBANX.config.getCountry()];
@@ -351,7 +351,7 @@ EBANX.utils = (function () {
           diners: /^36[0-9]{12}$/
         },
         ar: {
-          mastercard__all: /^[0-9]{16}$/
+          mastercard__all: /^[0-9]{16}$/,
         },
         all: {
           amex: /^3[47][0-9]{13}$/,
