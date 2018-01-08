@@ -48,7 +48,8 @@ const EBANX = (function () {
         const countryLocale = {
           'br': 'pt_BR',
           'mx': 'es',
-          'co': 'es'
+          'co': 'es',
+          'ar': 'es',
         };
 
         return countryLocale[EBANX.config.getCountry()];
@@ -330,7 +331,7 @@ EBANX.utils = (function () {
         return (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/');
       }
     },
-    availableCountries: ['br', 'mx', 'co'].join(', '),
+    availableCountries: ['br', 'mx', 'co', 'ar'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
@@ -348,6 +349,9 @@ EBANX.utils = (function () {
         },
         co: {
           diners: /^36[0-9]{12}$/
+        },
+        ar: {
+          mastercard__all: /^[0-9]{16}$/,
         },
         all: {
           amex: /^3[47][0-9]{13}$/,
