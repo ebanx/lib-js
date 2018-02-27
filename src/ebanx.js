@@ -70,9 +70,9 @@ EBANX.errors = (function () {
       'pt_BR': {
         'BP-DR-76': 'País não informado.',
         'BP-DR-77': 'País não permitido.',
-        'BP-DR-75': 'O número do cartão de crédito é inválido.',
+        'BP-DR-75': 'O número do cartão informado é inválido. Confira se não houve um erro de digitação e tente de novo.',
         'BP-DR-S-75': 'A bandeira do cartão de crédito é inválida.',
-        'BP-DR-51': 'Insira o nome que está impresso no cartão de crédito.',
+        'BP-DR-51': 'Ei, faltou uma informação aqui! Preencha com o nome que aparece em seu cartão.',
         'BP-DR-55': 'O código do cartão de crédito é inválido.',
         'BP-DR-57': 'A data do cartão de crédito deve estar no formato mes/ano, por exemplo, 12/2020.',
         'BP-DR-M-57': 'O mês data do cartão de crédito é inválido.',
@@ -81,9 +81,9 @@ EBANX.errors = (function () {
       'es': {
         'BP-DR-76': 'País não informado.',
         'BP-DR-77': 'País não permitido.',
-        'BP-DR-75': 'El número de tarjeta de crédito es inválido.',
+        'BP-DR-75': 'El número de la tarjeta es invalido. Confirma si no hay un error de escritura y vuelva a intentarlo.',
         'BP-DR-S-75': 'El bandera de tarjeta de crédito es inválido.',
-        'BP-DR-51': 'Por favor, introduce el nombre como está en tu tarjeta de crédito.',
+        'BP-DR-51': '¡Ups!, faltó llenar este campo. Llénalo con el nombre que aparece en tu tarjeta.',
         'BP-DR-55': 'El código de tarjeta de crédito es inválido.',
         'BP-DR-57': 'Por favor, escribe la fecha en el formato MM/AAAA.',
         'BP-DR-M-57': 'El mes de tarjeta de crédito es inválido.',
