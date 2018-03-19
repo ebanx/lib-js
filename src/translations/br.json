@@ -1,4 +1,6 @@
 {
+  "BP-DR-101": "Ops! Esse cartão não está liberado para fazer compras na internet. Entre em contato com o seu banco para mais informações.",
+  "BP-DR-102": "Ops, algo deu errado. Tente novamente com outro cartão.",
   "BP-DR-76": "País não informado.",
   "BP-DR-77": "País não permitido.",
   "BP-DR-75": "O número do cartão informado é inválido. Confira se não houve um erro de digitação e tente de novo.",
