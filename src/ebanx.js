@@ -1,3 +1,6 @@
+import spanishErrorMessages from './translations/es.json';
+import portugueseErrorMessages from './translations/br.json';
+
 /**
  * @module EBANX
  * @global
@@ -10,7 +13,7 @@ var EBANX = (function () {
     publicKey: ''
   };
 
-  $public.config = (function() {
+  $public.config = (function () {
     return {
       isLive: function () {
         return _private.mode === 'production';
@@ -67,28 +70,8 @@ var EBANX = (function () {
 EBANX.errors = (function () {
   return {
     summary: {
-      'pt_BR': {
-        'BP-DR-76': 'País não informado.',
-        'BP-DR-77': 'País não permitido.',
-        'BP-DR-75': 'O número do cartão de crédito é inválido.',
-        'BP-DR-S-75': 'A bandeira do cartão de crédito é inválida.',
-        'BP-DR-51': 'Insira o nome que está impresso no cartão de crédito.',
-        'BP-DR-55': 'O código do cartão de crédito é inválido.',
-        'BP-DR-57': 'A data do cartão de crédito deve estar no formato mes/ano, por exemplo, 12/2020.',
-        'BP-DR-M-57': 'O mês data do cartão de crédito é inválido.',
-        'BP-DR-Y-57': 'O ano data do cartão de crédito é inválido.'
-      },
-      'es': {
-        'BP-DR-76': 'País não informado.',
-        'BP-DR-77': 'País não permitido.',
-        'BP-DR-75': 'El número de tarjeta de crédito es inválido.',
-        'BP-DR-S-75': 'El bandera de tarjeta de crédito es inválido.',
-        'BP-DR-51': 'Por favor, introduce el nombre como está en tu tarjeta de crédito.',
-        'BP-DR-55': 'El código de tarjeta de crédito es inválido.',
-        'BP-DR-57': 'Por favor, escribe la fecha en el formato MM/AAAA.',
-        'BP-DR-M-57': 'El mes de tarjeta de crédito es inválido.',
-        'BP-DR-Y-57': 'El año de tarjeta de crédito es inválido.'
-      }
+      'pt_BR': portugueseErrorMessages,
+      'es': spanishErrorMessages
     },
     InvalidValueFieldError: function (message, field) {
       this.message = EBANX.errors.summary[EBANX.config.getLocale()][message] || message;
@@ -214,12 +197,12 @@ EBANX.validator = (function () {
        *
        * @return {boolean} true if valid false if not valid
        */
-      luhnAlgCheck: function(cardNumber) {
+      luhnAlgCheck: function (cardNumber) {
         /* jshint expr: true */
-        var b,c,d,e;
-        for(d = +cardNumber[b = cardNumber.length-1], e=0; b--;)
+        var b, c, d, e;
+        for (d = +cardNumber[b = cardNumber.length - 1], e = 0; b--;)
           c = +cardNumber[b], d += ++e % 2 ? 2 * c % 10 + (c > 4) : c;
-        return (d%10) === 0;
+        return (d % 10) === 0;
       },
       /**
        *
@@ -307,13 +290,13 @@ EBANX.tokenize = (function () {
             card: cardData
           })
         })
-        .always(function(result) {
-          if (result.status === 'ERROR' || !('token' in result)) {
-            return errorCallback(result);
-          }
+          .always(function (result) {
+            if (result.status === 'ERROR' || !('token' in result)) {
+              return errorCallback(result);
+            }
 
-          return cb(result);
-        });
+            return cb(result);
+          });
       }
     }
   };
@@ -327,7 +310,7 @@ EBANX.tokenize = (function () {
 EBANX.utils = (function () {
   var utilsModule = {
     api: {
-      path: function() {
+      path: function () {
         return (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/');
       }
     },
@@ -385,32 +368,32 @@ EBANX.utils = (function () {
     }
   };
 
-  utilsModule.api.url = function() {
+  utilsModule.api.url = function () {
     return utilsModule.api.path() + 'ws';
   };
 
   utilsModule.api.resources = {
-    createToken: function() {
+    createToken: function () {
       return {
-        url: utilsModule.api.url()+'/token',
+        url: utilsModule.api.url() + '/token',
         method: 'post'
       };
     },
-    validPublicIntegrationKey: function() {
+    validPublicIntegrationKey: function () {
       return {
-        url: utilsModule.api.url()+'/merchantIntegrationProperties/isValidPublicIntegrationKey',
+        url: utilsModule.api.url() + '/merchantIntegrationProperties/isValidPublicIntegrationKey',
         method: 'get'
       };
     },
-    fingerPrintResource: function() {
+    fingerPrintResource: function () {
       return {
-        url: utilsModule.api.path()+'fingerprint/',
+        url: utilsModule.api.path() + 'fingerprint/',
         method: 'get'
       };
     },
-    fingerPrintProvidersResource: function() {
+    fingerPrintProvidersResource: function () {
       return {
-        url: utilsModule.api.path()+'fingerprint/provider',
+        url: utilsModule.api.path() + 'fingerprint/provider',
         method: 'get'
       };
     }
@@ -451,7 +434,7 @@ EBANX.http = (function () {
         var parts = flattenObj(obj);
 
         parts = parts.map(function (varInfo) {
-          if (varInfo.path.length == 1) varInfo.path = varInfo.path[0];else {
+          if (varInfo.path.length == 1) varInfo.path = varInfo.path[0]; else {
             var first = varInfo.path[0];
             var rest = varInfo.path.slice(1);
             varInfo.path = first + '[' + rest.join('][') + ']';
@@ -469,7 +452,7 @@ EBANX.http = (function () {
       }
     },
     ajax: {
-      request: function(ops) {
+      request: function (ops) {
         if (typeof ops == 'string')
           ops = { url: ops };
 
@@ -480,22 +463,22 @@ EBANX.http = (function () {
         var api = {
           /* jshint expr: true */
           host: {},
-          process: function(ops) {
+          process: function (ops) {
             var self = this;
             this.xhr = null;
 
-            if(window.ActiveXObject) {
+            if (window.ActiveXObject) {
               this.xhr = new window.ActiveXObject('Microsoft.XMLHTTP');
-            } else if(window.XMLHttpRequest) {
+            } else if (window.XMLHttpRequest) {
               this.xhr = new XMLHttpRequest();
             }
 
-            if(this.xhr) {
-              this.xhr.onreadystatechange = function() {
-                if(self.xhr.readyState == 4) {
+            if (this.xhr) {
+              this.xhr.onreadystatechange = function () {
+                if (self.xhr.readyState == 4) {
                   var result = self.xhr.responseText || '{}';
 
-                  if(typeof ops.raw == 'undefined' && typeof JSON !== 'undefined') {
+                  if (typeof ops.raw == 'undefined' && typeof JSON !== 'undefined') {
                     result = JSON.parse(result);
                   }
 
@@ -505,19 +488,19 @@ EBANX.http = (function () {
             }
 
             if (ops.method.toUpperCase() == 'GET') {
-              ops.url += '?'+EBANX.http.normalize.q(ops.data);
+              ops.url += '?' + EBANX.http.normalize.q(ops.data);
               delete ops.data;
             }
 
             this.xhr.open(ops.method.toUpperCase(), ops.url, true);
 
-            setTimeout(function() {
+            setTimeout(function () {
               self.xhr.send(ops.data);
             }, 20);
 
             return this;
           },
-          always: function(callback) {
+          always: function (callback) {
             this.alwaysCallback = callback;
             return this;
           }
@@ -525,7 +508,7 @@ EBANX.http = (function () {
         return api.process(ops);
       }
     },
-    injectJS: function(src, cb) {
+    injectJS: function (src, cb) {
       var s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
@@ -573,17 +556,17 @@ EBANX.card = (function () {
       error: {}
     };
 
-    var tokenSuccess = function(resp) {
+    var tokenSuccess = function (resp) {
       response.data = resp;
 
-      EBANX.deviceFingerprint.setup(function(deviceId){
+      EBANX.deviceFingerprint.setup(function (deviceId) {
         response.data.deviceId = deviceId;
 
         return createTokenCallback(response);
       });
     };
 
-    var tokenError = function(err) {
+    var tokenError = function (err) {
       response.error.err = err;
 
       return createTokenCallback(response);
@@ -647,11 +630,11 @@ EBANX.deviceFingerprint = {
     EBANX.http.ajax.request({
       url: EBANX.utils.api.resources.fingerPrintResource().url,
       data: {
-          publicIntegrationKey: EBANX.config.getPublishableKey(),
-          country: EBANX.config.getCountry()
+        publicIntegrationKey: EBANX.config.getPublishableKey(),
+        country: EBANX.config.getCountry()
       }
     })
-    .always(cb);
+      .always(cb);
   },
 
   getProviderSessionId: function (provider) {

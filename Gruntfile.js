@@ -1,6 +1,6 @@
 var webpack = require('webpack');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   grunt.initConfig({
     webpack: {
@@ -19,8 +19,12 @@ module.exports = function(grunt) {
               exclude: /node_modules/,
               loader: 'babel',
               query: {
-                presets: ['es3']
+                presets: ['es2015']
               }
+            },
+            {
+              test: /\.json$/,
+              loader: 'json-loader'
             }
           ]
         },
@@ -30,10 +34,10 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-        files: ['Gruntfile.js', 'src/**/*.js'],
-        options: {
-          jshintrc: true
-        }
+      files: ['Gruntfile.js', 'src/**/*.js'],
+      options: {
+        jshintrc: true
+      }
     },
   });
 

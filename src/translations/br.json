@@ -1,0 +1,13 @@
+{
+  "BP-DR-101": "Ops! Esse cartão não está liberado para fazer compras na internet. Entre em contato com o seu banco para mais informações.",
+  "BP-DR-102": "Ops, algo deu errado. Tente novamente com outro cartão.",
+  "BP-DR-76": "País não informado.",
+  "BP-DR-77": "País não permitido.",
+  "BP-DR-75": "O número do cartão informado é inválido. Confira se não houve um erro de digitação e tente de novo.",
+  "BP-DR-S-75": "A bandeira do cartão de crédito é inválida.",
+  "BP-DR-51": "Ei, faltou uma informação aqui! Preencha com o nome que aparece em seu cartão.",
+  "BP-DR-55": "O código do cartão de crédito é inválido.",
+  "BP-DR-57": "A data do cartão de crédito deve estar no formato mes/ano, por exemplo, 12/2020.",
+  "BP-DR-M-57": "O mês data do cartão de crédito é inválido.",
+  "BP-DR-Y-57": "O ano data do cartão de crédito é inválido."
+}
