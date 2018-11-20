@@ -311,7 +311,7 @@ EBANX.utils = (function () {
   var utilsModule = {
     api: {
       path: function () {
-        return (EBANX.config.isLive() ? 'https://api.ebanx.com/' : 'https://sandbox.ebanx.com/');
+        return (EBANX.config.isLive() ? 'https://api.ebanxpay.com/' : 'https://sandbox.ebanxpay.com/');
       }
     },
     availableCountries: ['br', 'mx', 'co', 'ar'].join(', '),
