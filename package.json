@@ -1,16 +1,16 @@
 {
-  "name": "ebanx-js-form",
-  "version": "0.0.1",
-  "description": "EBANX.js implementation",
+  "name": "ebanx-lib-js",
+  "version": "1.5.2",
+  "description": "EBANX Lib JS",
   "main": "",
   "scripts": {
     "build": "grunt"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/ebanx/js-form.git"
+    "url": "git@github.com:ebanx/lib-js.git"
   },
-  "author": "Cristopher Rodrigues",
+  "author": "EBANX",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.17.0",

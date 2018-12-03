@@ -9,7 +9,7 @@ Find more information in our [Dev Academy](https://www.ebanx.com/business/en/dev
 ### 1. Add this script to your page:
 
 ```html
-<script type="text/javascript" src="https://js.ebanx.com/ebanx-1.5.min.js/"></script>
+<script type="text/javascript" src="https://js.ebanx.com/ebanx-1.5.2.min.js/"></script>
 ```
 ### 2. Config
 
