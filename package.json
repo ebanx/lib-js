@@ -3,7 +3,9 @@
   "version": "1.5.2",
   "description": "EBANX Lib JS",
   "main": "",
-  "scripts": {},
+  "scripts": {
+    "build": "rollup -c"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:ebanx/lib-js.git"
