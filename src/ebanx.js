@@ -5,7 +5,7 @@ import portugueseErrorMessages from './translations/br.json';
  * @module EBANX
  * @global
  */
-var EBANX = (function () {
+const EBANX = (function () {
   var $public = {};
   var _private = {
     country: '',
@@ -686,4 +686,4 @@ EBANX.deviceFingerprint = {
   }
 };
 
-module.exports = EBANX;
+export default EBANX;
