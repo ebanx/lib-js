@@ -55,7 +55,7 @@ createToken();
 ![Usage flow Diagram](./usage-flow-diagram.png)
 
 ## Architecture
-This library is composed by 8 main modules
+This library is composed by 7 main modules
 
 ### Card
 * The main interface for Card Tokenization
@@ -69,5 +69,5 @@ This library is composed by 8 main modules
 * Manages the token resource status and tokenization request callbacks
 ### Utils
 * Provides resources for API Addressess and available countries
-### Valiadtion
+### Validation
 * Validates API Key, countries and card data
