@@ -327,7 +327,7 @@ EBANX.utils = (function () {
           hipercard: /^(38|60)[0-9]{11,17}$/
         },
         mx: {
-          carnet: /^5[6-9][0-9]{14}$/,
+          carnet: /^5[0-9][0-9]{14}$/,
           mastercard__2: /^2[2-7][0-9]{14}$/
         },
         co: {
