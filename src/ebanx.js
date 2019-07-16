@@ -173,7 +173,7 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validateNumber: function (number) {
-        var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
+        var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906|568009)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
         if (!regex.test(number) || !this.luhnAlgCheck(String(number)))
           throw new EBANX.errors.InvalidValueFieldError('BP-DR-75', 'card_number');
       },
@@ -314,7 +314,7 @@ EBANX.utils = (function () {
         return (EBANX.config.isLive() ? 'https://api.ebanxpay.com/' : 'https://sandbox.ebanxpay.com/');
       }
     },
-    availableCountries: ['br', 'mx', 'co', 'ar', 'pe'].join(', '),
+    availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
@@ -335,6 +335,9 @@ EBANX.utils = (function () {
         },
         ar: {
           mastercard__all: /^[0-9]{16}$/,
+        },
+        cl: {
+          magna: /^(568009)/,
         },
         all: {
           amex: /^3[47][0-9]{13}$/,
