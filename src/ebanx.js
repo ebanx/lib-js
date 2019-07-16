@@ -314,7 +314,7 @@ EBANX.utils = (function () {
         return (EBANX.config.isLive() ? 'https://api.ebanxpay.com/' : 'https://sandbox.ebanxpay.com/');
       }
     },
-    availableCountries: ['br', 'mx', 'co', 'ar'].join(', '),
+    availableCountries: ['br', 'mx', 'co', 'ar', 'pe'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
