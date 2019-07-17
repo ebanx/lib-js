@@ -1,6 +1,8 @@
 import json from "rollup-plugin-json";
 import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
+import license from "rollup-plugin-license";
+
 import project from './package.json';
 
 export default {
@@ -23,6 +25,16 @@ export default {
         ]
       ]
     }),
-    terser()
+    terser(),
+    license({
+      banner: {
+        file: 'LICENSE.md',
+      }
+    }),
+    license({
+      banner: {
+        file: 'BANNER.md',
+      }
+    }),
   ]
 };
