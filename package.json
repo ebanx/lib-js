@@ -1,9 +1,10 @@
 {
-  "name": "ebanx-lib-js",
-  "version": "1.9.0",
+  "name": "@ebanx/lib-js",
+  "version": "1.10.0",
   "description": "EBANX Lib JS",
-  "main": "",
+  "main": "dist/ebanx-libjs-latest.min.js",
   "scripts": {
+    "postinstall" : "npm run build",
     "build": "rm -rf dist && rollup -c && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js"
   },
   "repository": {
