@@ -4,8 +4,8 @@
   "description": "EBANX Lib JS",
   "main": "dist/ebanx-libjs-latest.min.js",
   "scripts": {
-    "install": "npm run build",
-    "build": "rm -rf dist && node_modules/.bin/rollup -c && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js"
+    "install": "npm install . && npm run build",
+    "build": "rm -rf dist && rollup -c && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js"
   },
   "repository": {
     "type": "git",
