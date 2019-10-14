@@ -622,9 +622,14 @@ EBANX.deviceFingerprint = {
         return;
 
       EBANX.deviceFingerprint.ebanx_session_id = list.ebanx_session_id;
-      cb(list.ebanx_session_id);
-      list.providers.forEach(function (provider) {
-        self.getProviderSessionId(provider);
+      list.providers.forEach(function (provider, index) {
+        (function(isLastProvider) {
+          self.getProviderSessionId(provider, function() {
+            if (isLastProvider) {
+              cb(list.ebanx_session_id);
+            }
+          });
+        })(index === list.providers.length - 1);
       });
     });
   },
@@ -640,8 +645,8 @@ EBANX.deviceFingerprint = {
       .always(cb);
   },
 
-  getProviderSessionId: function (provider) {
-    this.loadProvider(provider, this.saveProviderSessionList);
+  getProviderSessionId: function (provider, callAfterLoadingProvider) {
+    this.loadProvider(provider, this.saveProviderSessionList, callAfterLoadingProvider);
   },
 
   saveProviderSessionList: function (providerSession) {
@@ -677,13 +682,14 @@ EBANX.deviceFingerprint = {
     });
   },
 
-  loadProvider: function (data, cb) {
+  loadProvider: function (data, cb, callAfterLoadingProvider) {
     EBANX.http.injectJS(data.source, function () {
       EBANX.deviceFingerprint[data.provider].setup(data.settings, function (session_id) {
         cb({
           provider: data.provider,
           session_id: session_id
         });
+        callAfterLoadingProvider();
       });
     });
   }
