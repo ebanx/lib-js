@@ -627,14 +627,14 @@ EBANX.deviceFingerprint = {
         cb(list.ebanx_session_id);
       }
 
+      var remainingSuccessfullCallsToProviders = list.providers.length;
+
       list.providers.forEach(function (provider, index) {
-        (function(isLastProvider) {
-          self.getProviderSessionId(provider, function() {
-            if (isLastProvider) {
-              cb(list.ebanx_session_id);
-            }
-          });
-        })(index === list.providers.length - 1);
+        self.getProviderSessionId(provider, function() {
+          if (--remainingSuccessfullCallsToProviders === 0) {
+            cb(list.ebanx_session_id);
+          }
+        });
       });
     });
   },
@@ -689,9 +689,11 @@ EBANX.deviceFingerprint = {
       url: resource.url,
       method: resource.method,
       data: data
+    }).always(function(res, xhr) {
+      if (xhr.status === 200) {
+        callAfterSaveProviderSession();
+      }
     });
-
-    callAfterSaveProviderSession();
   },
 
   loadProvider: function (data, cb) {
