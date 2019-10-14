@@ -645,21 +645,25 @@ EBANX.deviceFingerprint = {
       .always(cb);
   },
 
-  getProviderSessionId: function (provider, callAfterLoadingProvider) {
-    this.loadProvider(provider, this.saveProviderSessionList, callAfterLoadingProvider);
+  getProviderSessionId: function (provider, callAfterSaveProviderSessionList) {
+    this.loadProvider(provider, function(providerSession) {
+      this.saveProviderSessionList(providerSession, callAfterSaveProviderSessionList);
+    });
   },
 
-  saveProviderSessionList: function (providerSession) {
+  saveProviderSessionList: function (providerSession, callAfterSaveProviderSession) {
     var self = EBANX.deviceFingerprint;
     if (self.providerPostPending) {
       clearTimeout(self.providerPostPending);
     }
 
     self.providerSessionList.push(providerSession);
-    self.providerPostPending = setTimeout(self.postProviderSessionList, 1000);
+    self.providerPostPending = setTimeout(function() {
+      self.postProviderSessionList(callAfterSaveProviderSession);
+    }, 1000);
   },
 
-  postProviderSessionList: function () {
+  postProviderSessionList: function (callAfterSaveProviderSession) {
     var self = EBANX.deviceFingerprint;
     var providers = self.providerSessionList;
     self.providerSessionList = [];
@@ -680,16 +684,17 @@ EBANX.deviceFingerprint = {
       method: resource.method,
       data: data
     });
+
+    callAfterSaveProviderSession();
   },
 
-  loadProvider: function (data, cb, callAfterLoadingProvider) {
+  loadProvider: function (data, cb) {
     EBANX.http.injectJS(data.source, function () {
       EBANX.deviceFingerprint[data.provider].setup(data.settings, function (session_id) {
         cb({
           provider: data.provider,
           session_id: session_id
         });
-        callAfterLoadingProvider();
       });
     });
   }
