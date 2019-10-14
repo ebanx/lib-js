@@ -646,8 +646,9 @@ EBANX.deviceFingerprint = {
   },
 
   getProviderSessionId: function (provider, callAfterSaveProviderSessionList) {
+    var self = this;
     this.loadProvider(provider, function(providerSession) {
-      this.saveProviderSessionList(providerSession, callAfterSaveProviderSessionList);
+      self.saveProviderSessionList(providerSession, callAfterSaveProviderSessionList);
     });
   },
 
