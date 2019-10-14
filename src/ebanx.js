@@ -622,6 +622,11 @@ EBANX.deviceFingerprint = {
         return;
 
       EBANX.deviceFingerprint.ebanx_session_id = list.ebanx_session_id;
+
+      if (!list.providers.length) {
+        cb(list.ebanx_session_id);
+      }
+
       list.providers.forEach(function (provider, index) {
         (function(isLastProvider) {
           self.getProviderSessionId(provider, function() {
