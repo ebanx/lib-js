@@ -611,87 +611,94 @@ EBANX.card = (function () {
 })();
 
 EBANX.deviceFingerprint = {
-  ebanx_session_id: null,
+  ebanxSessionId: null,
   providerSessionList: [],
-  providerPostPending: null,
+  postProvidersRemaining: 0,
+  onSuccessCallback: null,
+  onErrorCallback: null,
 
-  setup: function (cb) {
-    var self = this;
-    this.getList(function (list) {
-      if (!(list && list.ebanx_session_id))
-        return;
+  setup: function (onSuccess, onError) {
+    this.onSuccessCallback = onSuccess || console.log;
+    this.onErrorCallback = onError || console.error;
 
-      EBANX.deviceFingerprint.ebanx_session_id = list.ebanx_session_id;
+    this.getList(function (providersList) {
+      try {
+        if (!providersList || !providersList.ebanx_session_id) {
+          throw new Error([
+            "providersList or ebanxSessionId is missing - ",
+            "providersList = ", providersList,
+            "ebanxSessionId = ", providersList.ebanx_session_id
+          ].join(""));
+        }
 
-      if (!list.providers.length) {
-        cb(list.ebanx_session_id);
+        if (!providersList.providers || !providersList.providers.length) {
+          return this.onSuccessCallback(providersList.ebanx_session_id);
+        }
+
+        this.ebanxSessionId = providersList.ebanx_session_id;
+        this.postProvidersRemaining = providersList.providers.length;
+
+        providersList.providers.forEach(function (provider) {
+          this.loadProvider(provider, this.saveProviderSessionList.bind(this));
+        }.bind(this));
+      } catch (e) {
+        this.onErrorCallback(e);
       }
-
-      list.providers.forEach(function (provider, index) {
-        (function(isLastProvider) {
-          self.getProviderSessionId(provider, function() {
-            if (isLastProvider) {
-              cb(list.ebanx_session_id);
-            }
-          });
-        })(index === list.providers.length - 1);
-      });
-    });
+    }.bind(this));
   },
 
   getList: function (cb) {
-    EBANX.http.ajax.request({
-      url: EBANX.utils.api.resources.fingerPrintResource().url,
-      data: {
-        publicIntegrationKey: EBANX.config.getPublishableKey(),
-        country: EBANX.config.getCountry()
-      }
-    })
+    EBANX.http.ajax
+      .request({
+        url: EBANX.utils.api.resources.fingerPrintResource().url,
+        data: {
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
+          country: EBANX.config.getCountry()
+        }
+      })
       .always(cb);
   },
 
-  getProviderSessionId: function (provider, callAfterSaveProviderSessionList) {
-    var self = this;
-    this.loadProvider(provider, function(providerSession) {
-      self.saveProviderSessionList(providerSession, callAfterSaveProviderSessionList);
-    });
-  },
+  saveProviderSessionList: function (providerSession) {
+    this.postProvidersRemaining--;
+    this.providerSessionList.push(providerSession);
 
-  saveProviderSessionList: function (providerSession, callAfterSaveProviderSession) {
-    var self = EBANX.deviceFingerprint;
-    if (self.providerPostPending) {
-      clearTimeout(self.providerPostPending);
+    if (!this.postProvidersRemaining) {
+      this.postProviderSessionList();
     }
-
-    self.providerSessionList.push(providerSession);
-    self.providerPostPending = setTimeout(function() {
-      self.postProviderSessionList(callAfterSaveProviderSession);
-    }, 1000);
   },
 
-  postProviderSessionList: function (callAfterSaveProviderSession) {
-    var self = EBANX.deviceFingerprint;
-    var providers = self.providerSessionList;
-    self.providerSessionList = [];
+  postProviderSessionList: function () {
+    var ebanxSessionId = this.ebanxSessionId;
+    var providersSessionList = this.providerSessionList;
+    var onSuccessCallback = this.onSuccessCallback;
+    var onErrorCallback = this.onErrorCallback;
 
-    clearTimeout(self.providerPostPending);
-    self.providerPostPending = null;
+    this.ebanxSessionId = null;
+    this.providerSessionList = [];
+    this.onSuccessCallback = null;
+    this.onErrorCallback = null;
 
     var data = {
       publicIntegrationKey: EBANX.config.getPublishableKey(),
-      ebanx_session_id: self.ebanx_session_id,
-      providers: providers
+      ebanx_session_id: ebanxSessionId,
+      providers: providersSessionList
     };
 
     var resource = EBANX.utils.api.resources.fingerPrintProvidersResource();
 
-    EBANX.http.ajax.request({
-      url: resource.url,
-      method: resource.method,
-      data: data
-    });
-
-    callAfterSaveProviderSession();
+    EBANX.http.ajax
+      .request({
+        url: resource.url,
+        method: resource.method,
+        data: data
+      })
+      .always(function (data, xhr) {
+        if (xhr.status === 200) {
+          onSuccessCallback(ebanxSessionId);
+        }
+        onErrorCallback(new Error("postProviderSessionList - xhr.status !== 200 - " + xhr.status));
+      });
   },
 
   loadProvider: function (data, cb) {
