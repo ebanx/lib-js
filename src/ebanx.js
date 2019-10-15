@@ -626,7 +626,7 @@ EBANX.deviceFingerprint = {
         if (!providersList || !providersList.ebanx_session_id) {
           throw new Error([
             "providersList or ebanxSessionId is missing - ",
-            "providersList = ", providersList,
+            "providersList = ", JSON.stringify(providersList),
             "ebanxSessionId = ", providersList.ebanx_session_id
           ].join(""));
         }
