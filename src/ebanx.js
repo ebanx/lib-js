@@ -611,9 +611,10 @@ EBANX.card = (function () {
 })();
 
 EBANX.deviceFingerprint = {
-  ebanx_session_id: null,
+  ebanxSessionId: null,
   providerSessionList: [],
-  providerPostPending: null,
+  postProvidersRemaining: 0,
+  postProvidersCallback: null,
 
   setup: function (cb) {
     var self = this;
@@ -621,20 +622,17 @@ EBANX.deviceFingerprint = {
       if (!(list && list.ebanx_session_id))
         return;
 
-      EBANX.deviceFingerprint.ebanx_session_id = list.ebanx_session_id;
-
-      if (!list.providers.length) {
+      if (list.providers.length === 0) {
         cb(list.ebanx_session_id);
+        return;
       }
 
-      list.providers.forEach(function (provider, index) {
-        (function(isLastProvider) {
-          self.getProviderSessionId(provider, function() {
-            if (isLastProvider) {
-              cb(list.ebanx_session_id);
-            }
-          });
-        })(index === list.providers.length - 1);
+      self.ebanxSessionId = list.ebanx_session_id;
+      self.postProvidersRemaining = list.providers.length;
+      self.postProvidersCallback = cb;
+
+      list.providers.forEach(function (provider) {
+        self.getProviderSessionId(provider);
       });
     });
   },
@@ -659,27 +657,27 @@ EBANX.deviceFingerprint = {
 
   saveProviderSessionList: function (providerSession, callAfterSaveProviderSession) {
     var self = EBANX.deviceFingerprint;
-    if (self.providerPostPending) {
-      clearTimeout(self.providerPostPending);
-    }
-
+    self.postProvidersRemaining -= 1;
     self.providerSessionList.push(providerSession);
-    self.providerPostPending = setTimeout(function() {
-      self.postProviderSessionList(callAfterSaveProviderSession);
-    }, 1000);
+
+    if (self.postProvidersRemaining === 0) {
+      self.postProviderSessionList();
+    }
   },
 
   postProviderSessionList: function (callAfterSaveProviderSession) {
     var self = EBANX.deviceFingerprint;
+    var ebanxSessionId = self.ebanx_session_id;
+    var postProvidersCallback = self.postProvidersCallback;
     var providers = self.providerSessionList;
-    self.providerSessionList = [];
 
-    clearTimeout(self.providerPostPending);
-    self.providerPostPending = null;
+    self.ebanxSession_id = null;
+    self.postProvidersCallback = null;
+    self.providerSessionList = [];
 
     var data = {
       publicIntegrationKey: EBANX.config.getPublishableKey(),
-      ebanx_session_id: self.ebanx_session_id,
+      ebanx_session_id: ebanxSessionId,
       providers: providers
     };
 
@@ -689,6 +687,10 @@ EBANX.deviceFingerprint = {
       url: resource.url,
       method: resource.method,
       data: data
+    }).always(function(data, xhr) {
+      if (xhr.status === 200) {
+        postProvidersCallback(ebanxSessionId);
+      }
     });
 
     callAfterSaveProviderSession();
