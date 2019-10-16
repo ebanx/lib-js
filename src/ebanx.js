@@ -623,13 +623,8 @@ EBANX.deviceFingerprint = {
 
     this.getList(function (providersList) {
       try {
-        if (!providersList || !providersList.ebanx_session_id) {
-          throw new Error([
-            "providersList or ebanxSessionId is missing - ",
-            "providersList = ", JSON.stringify(providersList),
-            "ebanxSessionId = ", providersList.ebanx_session_id
-          ].join(""));
-        }
+        if (!providersList) throw new Error('EBANX.deviceFingerprint.setup - providersList is missing');
+        if (!providersList.ebanx_session_id) throw new Error('EBANX.deviceFingerprint.setup - ebanx_session_id is missing');
 
         if (!providersList.providers || !providersList.providers.length) {
           return this.onSuccessCallback(providersList.ebanx_session_id);
