@@ -1,11 +1,14 @@
 {
   "name": "@ebanx/lib-js",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "EBANX Lib JS",
   "main": "dist/ebanx-libjs-latest.min.js",
   "scripts": {
     "prepare": "npm run build",
-    "build": "rm -rf dist && rollup -c && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js"
+    "prebuild" : "rm -rf dist",
+    "build": "npm run build:local && npm run build:xborder",
+    "build:local": "rollup --config ./rollup-local.config.js && cp dist/ebanxpay-*.js dist/ebanxpay-libjs-latest.min.js",
+    "build:xborder": "rollup --config ./rollup-xborder.config.js && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js"
   },
   "repository": {
     "type": "git",
@@ -16,6 +19,7 @@
   "devDependencies": {
     "@babel/core": "^7.5.4",
     "@babel/preset-env": "^7.6.2",
+    "@rollup/plugin-replace": "^2.2.1",
     "rollup": "^1.23.1",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-json": "^4.0.0",

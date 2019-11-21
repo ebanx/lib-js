@@ -3,12 +3,9 @@ import babel from "rollup-plugin-babel";
 import { terser } from "rollup-plugin-terser";
 import license from "rollup-plugin-license";
 
-import project from './package.json';
-
 export default {
   input: "src/ebanx.js",
   output: {
-    file: `dist/ebanx-${project.version}.min.js`,
     format: "umd",
     name: "EBANX"
   },
