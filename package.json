@@ -1,11 +1,11 @@
 {
   "name": "@ebanx/lib-js",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "description": "EBANX Lib JS",
   "main": "dist/ebanx-libjs-latest.min.js",
   "scripts": {
     "prepare": "npm run build",
-    "prebuild" : "rm -rf dist",
+    "prebuild": "rm -rf dist",
     "build": "npm run build:local && npm run build:xborder",
     "build:local": "rollup --config ./rollup-local.config.js && cp dist/ebanxpay-*.js dist/ebanxpay-libjs-latest.min.js",
     "build:xborder": "rollup --config ./rollup-xborder.config.js && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js"
