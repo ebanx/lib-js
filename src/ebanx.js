@@ -691,8 +691,9 @@ EBANX.deviceFingerprint = {
       .always(function (data, xhr) {
         if (xhr.status == 200) {
           onSuccessCallback(ebanxSessionId);
+        } else {
+          onErrorCallback(new Error("postProviderSessionList - xhr.status != 200, received value: " + xhr.status));
         }
-        onErrorCallback(new Error("postProviderSessionList - xhr.status != 200, received value: " + xhr.status));
       });
   },
 
