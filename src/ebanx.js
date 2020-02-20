@@ -631,6 +631,8 @@ EBANX.deviceFingerprint = {
         }
 
         this.ebanxSessionId = providersList.ebanx_session_id;
+        // This variable is duplicated for compatibility with providers scripts
+        this.ebanx_session_id = this.ebanxSessionId;
         this.postProvidersRemaining = providersList.providers.length;
 
         providersList.providers.forEach(function (provider) {
