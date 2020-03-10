@@ -1,9 +1,13 @@
 import { config } from './config';
 import { errors } from './errors';
+import { http } from './http';
+import { utils } from './utils';
 import { validator } from './validator';
 
 export const $public = {
-  errors,
   config,
+  errors,
+  http,
+  utils,
   validator,
 };
