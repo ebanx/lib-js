@@ -1,12 +1,13 @@
 import spanishErrorMessages from './translations/es.json';
 import portugueseErrorMessages from './translations/br.json';
 
+import { $public } from "./$public";
+
 /**
  * @module EBANX
  * @global
  */
 const EBANX = (function () {
-  var $public = {};
   var _private = {
     country: '',
     mode: 'test',
