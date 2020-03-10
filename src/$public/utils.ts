@@ -70,10 +70,10 @@ export const utils = {
     };
 
     const localSchemes = {};
-    for (var prop in schemes[EBANX.config.getCountry()]) {
-      localSchemes[prop] = schemes[EBANX.config.getCountry()][prop];
+    for (const prop in schemes[config.getCountry()]) {
+      localSchemes[prop] = schemes[config.getCountry()][prop];
     }
-    for (var prop in schemes.all) {
+    for (const prop in schemes.all) {
       localSchemes[prop] = schemes.all[prop];
     }
 
