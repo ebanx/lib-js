@@ -1,27 +1,20 @@
-import json from "rollup-plugin-json";
-import babel from "rollup-plugin-babel";
+
 import { terser } from "rollup-plugin-terser";
-import license from "rollup-plugin-license";
+import json from '@rollup/plugin-json';
+import license from "@rollup/plugin-replace";
+import typescript from 'rollup-plugin-typescript2';
+
+import pkg from './package.json';
 
 export default {
-  input: "src/ebanx.js",
+  input: "src/index.ts",
   output: {
     format: "umd",
     name: "EBANX"
   },
   plugins: [
+    typescript(),
     json(),
-    babel({
-      babelrc: false,
-      presets: [
-        [
-          "@babel/env",
-          {
-            targets: "> 0.5%, ie >= 10"
-          }
-        ]
-      ]
-    }),
     terser(),
     license({
       banner: {
