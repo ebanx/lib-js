@@ -1,90 +1,15 @@
-import spanishErrorMessages from './translations/es.json';
-import portugueseErrorMessages from './translations/br.json';
-
-import { $public } from "./$public";
+import { $public } from './$public';
 
 /**
  * @module EBANX
  * @global
  */
 const EBANX = (function () {
-  var _private = {
-    country: '',
-    mode: 'test',
-    publicKey: ''
-  };
-
-  $public.config = (function () {
-    return {
-      isLive: function () {
-        return _private.mode === 'production';
-      },
-      setPublishableKey: function (key) {
-        _private.publicKey = String(key);
-      },
-      setCountry: function (country) {
-        EBANX.validator.config.validateCountry(country);
-
-        _private.country = String(country);
-      },
-      setMode: function (mode) {
-        EBANX.validator.config.validateMode(mode);
-
-        _private.mode = mode;
-      },
-      getMode: function () {
-        return _private.mode;
-      },
-      getPublishableKey: function () {
-        if (_private.publicKey.trim() === '')
-          throw new EBANX.errors.InvalidConfigurationError('Missing publishable key. You need set publishable key using the method EBANX.config.setPublishableKey.', 'publicKey');
-
-        return _private.publicKey;
-      },
-      getCountry: function () {
-        if (!_private.country) {
-          _private.country = 'br';
-        }
-
-        return _private.country;
-      },
-      getLocale: function () {
-        var countryLocale = {
-          'br': 'pt_BR',
-          'mx': 'es',
-          'co': 'es',
-          'ar': 'es',
-        };
-
-        return countryLocale[EBANX.config.getCountry()];
-      }
-    };
-  })();
-
   if ($public.config.isLive() && location.protocol !== 'https:') {
     throw 'EBANXInvalidConfigurationError: Your protocol needs to be https.';
   }
 
   return $public;
-})();
-
-EBANX.errors = (function () {
-  return {
-    summary: {
-      'pt_BR': portugueseErrorMessages,
-      'es': spanishErrorMessages
-    },
-    InvalidValueFieldError: function (message, field) {
-      this.message = EBANX.errors.summary[EBANX.config.getLocale()][message] || message;
-      this.field = field;
-      this.name = 'InvalidValueFieldError';
-    },
-    InvalidConfigurationError: function (message, config) {
-      this.message = EBANX.errors.summary[EBANX.config.getLocale()][message] || message;
-      this.invalidConfiguration = config;
-      this.name = 'InvalidConfigurationError';
-    }
-  };
 })();
 
 /**
@@ -94,8 +19,8 @@ EBANX.errors = (function () {
  * @protected
  */
 EBANX.validator = (function () {
-  var cachedResults = {
-    publicKey: {}
+  const cachedResults = {
+    publicKey: {},
   };
 
   return {
@@ -112,7 +37,7 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validatePublishableKey: function (key, cb) {
-        var publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey();
+        const publicKeyResource = EBANX.utils.api.resources.validPublicIntegrationKey();
 
         if (cachedResults.publicKey[key]) {
           cb(cachedResults.publicKey[key]);
@@ -125,8 +50,8 @@ EBANX.validator = (function () {
             method: publicKeyResource.method,
             raw: true,
             data: {
-              public_integration_key: key
-            }
+              public_integration_key: key,
+            },
           })
           .always(function (res) {
             cachedResults.publicKey[key] = res;
@@ -156,7 +81,7 @@ EBANX.validator = (function () {
         if (mode.match(/^(test|production)$/) === null) {
           throw new EBANX.errors.InvalidConfigurationError('Invalid mode, please, use "test" or "production" as test mode.', 'mode');
         }
-      }
+      },
     },
     /**
      * Card object validator in EBANX/validator~card.
@@ -174,7 +99,7 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validateNumber: function (number) {
-        var regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906|568009|230540|230868)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
+        const regex = /^3[47][0-9]{13}$|^50[0-9]{14,17}$|^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906|568009|230540|230868)|^3(?:0[0-5]|[68][0-9])[0-9]{11}$|^6(?:011|5[0-9]{2})[0-9]{12}$|^(38|60)[0-9]{11,17}$|^5[1-5][0-9]{14}$|^4[0-9]{12}(?:[0-9]{3})?$/;
         if (!regex.test(number) || !this.luhnAlgCheck(String(number)))
           throw new EBANX.errors.InvalidValueFieldError('BP-DR-75', 'card_number');
       },
@@ -200,7 +125,7 @@ EBANX.validator = (function () {
        */
       luhnAlgCheck: function (cardNumber) {
         /* jshint expr: true */
-        var b, c, d, e;
+        let b, c, d, e;
         for (d = +cardNumber[b = cardNumber.length - 1], e = 0; b--;)
           c = +cardNumber[b], d += ++e % 2 ? 2 * c % 10 + (c > 4) : c;
         return (d % 10) === 0;
@@ -214,7 +139,7 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validateCvv: function (cvv) {
-        var regex = new RegExp('^[0-9]{3,4}$');
+        const regex = new RegExp('^[0-9]{3,4}$');
         if (!String(cvv).match(regex)) {
           throw new EBANX.errors.InvalidValueFieldError('BP-DR-55', 'card_cvv');
         }
@@ -230,12 +155,12 @@ EBANX.validator = (function () {
        * @return {void}
        */
       validateDueDate: function (dueDate) {
-        var date = (dueDate + '').split('/');
+        let date = (dueDate + '').split('/');
 
         date = {
           now: new Date(),
           year: date[1],
-          month: date[0]
+          month: date[0],
         };
 
         if (((/^\d+$/).test(date.month)) !== true || (parseInt(date.month, 10) <= 12) !== true) {
@@ -270,8 +195,8 @@ EBANX.validator = (function () {
         this.validateNumber(cardData.card_number);
         this.validateDueDate(cardData.card_due_date);
         this.validateCvv(cardData.card_cvv);
-      }
-    }
+      },
+    },
   };
 })();
 
@@ -279,7 +204,7 @@ EBANX.tokenize = (function () {
   return {
     card: {
       token: function (cardData, cb, errorCallback) {
-        var tokenResource = EBANX.utils.api.resources.createToken();
+        const tokenResource = EBANX.utils.api.resources.createToken();
 
         EBANX.http.ajax.request({
           url: tokenResource.url,
@@ -288,8 +213,8 @@ EBANX.tokenize = (function () {
             public_integration_key: EBANX.config.getPublishableKey(),
             payment_type_code: EBANX.utils.creditCardScheme(cardData.card_number),
             country: EBANX.config.getCountry(),
-            card: cardData
-          })
+            card: cardData,
+          }),
         })
           .always(function (result) {
             if (result.status === 'ERROR' || !('token' in result)) {
@@ -298,8 +223,8 @@ EBANX.tokenize = (function () {
 
             return cb(result);
           });
-      }
-    }
+      },
+    },
   };
 })();
 
@@ -309,30 +234,30 @@ EBANX.tokenize = (function () {
  * @public
  */
 EBANX.utils = (function () {
-  var utilsModule = {
+  const utilsModule = {
     api: {
       path: function () {
         return (EBANX.config.isLive() ? process.env.EBANX_API_PRODUCTION : process.env.EBANX_API_SANDBOX);
-      }
+      },
     },
     availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl', 'ec', 'bo'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
-      var schemes = {
+      const schemes = {
         br: {
           aura: /^50[0-9]{14,17}$/,
           elo: /^(636368|438935|504175|451416|636297|5067|4576|4011|50904|50905|50906)/,
           diners: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
           discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
-          hipercard: /^(38|60)[0-9]{11,17}$/
+          hipercard: /^(38|60)[0-9]{11,17}$/,
         },
         mx: {
           carnet: /^5[0-9][0-9]{14}$/,
-          mastercard__2: /^2[2-7][0-9]{14}$/
+          mastercard__2: /^2[2-7][0-9]{14}$/,
         },
         co: {
-          diners: /^36[0-9]{12}$/
+          diners: /^36[0-9]{12}$/,
         },
         ar: {
           mastercard__all: /^[0-9]{16}$/,
@@ -343,11 +268,11 @@ EBANX.utils = (function () {
         all: {
           amex: /^3[47][0-9]{13}$/,
           mastercard: /^5[1-5][0-9]{14}$/,
-          visa: /^4[0-9]{12}(?:[0-9]{3})?$/
-        }
+          visa: /^4[0-9]{12}(?:[0-9]{3})?$/,
+        },
       };
 
-      var localSchemes = {};
+      const localSchemes = {};
       for (var prop in schemes[EBANX.config.getCountry()]) {
         localSchemes[prop] = schemes[EBANX.config.getCountry()][prop];
       }
@@ -355,12 +280,12 @@ EBANX.utils = (function () {
         localSchemes[prop] = schemes.all[prop];
       }
 
-      for (var scheme in localSchemes) {
+      for (const scheme in localSchemes) {
         if (!localSchemes[scheme].test(cardNumber))
           continue;
 
-        var result = scheme;
-        var separatorIndex = scheme.indexOf('__');
+        let result = scheme;
+        const separatorIndex = scheme.indexOf('__');
         if (separatorIndex !== -1) {
           result = scheme.substr(0, separatorIndex);
         }
@@ -369,7 +294,7 @@ EBANX.utils = (function () {
       }
 
       throw new EBANX.errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
-    }
+    },
   };
 
   utilsModule.api.url = function () {
@@ -380,27 +305,27 @@ EBANX.utils = (function () {
     createToken: function () {
       return {
         url: utilsModule.api.url() + '/token',
-        method: 'post'
+        method: 'post',
       };
     },
     validPublicIntegrationKey: function () {
       return {
         url: utilsModule.api.url() + '/merchantIntegrationProperties/isValidPublicIntegrationKey',
-        method: 'get'
+        method: 'get',
       };
     },
     fingerPrintResource: function () {
       return {
         url: utilsModule.api.path() + 'fingerprint/',
-        method: 'get'
+        method: 'get',
       };
     },
     fingerPrintProvidersResource: function () {
       return {
         url: utilsModule.api.path() + 'fingerprint/provider',
-        method: 'get'
+        method: 'get',
       };
-    }
+    },
   };
 
   return utilsModule;
@@ -412,16 +337,16 @@ EBANX.http = (function () {
     normalize: {
       q: function (obj, urlEncode) {
         function flattenObj(x, path) {
-          var result = [];
+          const result = [];
 
           path = path || [];
           Object.keys(x).forEach(function (key) {
             if (!x.hasOwnProperty(key)) return;
 
-            var newPath = path.slice();
+            const newPath = path.slice();
             newPath.push(key);
 
-            var vals = [];
+            let vals = [];
             if (typeof x[key] == 'object') {
               vals = flattenObj(x[key], newPath);
             } else {
@@ -435,25 +360,25 @@ EBANX.http = (function () {
           return result;
         }
 
-        var parts = flattenObj(obj);
+        let parts = flattenObj(obj);
 
         parts = parts.map(function (varInfo) {
           if (varInfo.path.length == 1) varInfo.path = varInfo.path[0]; else {
-            var first = varInfo.path[0];
-            var rest = varInfo.path.slice(1);
+            const first = varInfo.path[0];
+            const rest = varInfo.path.slice(1);
             varInfo.path = first + '[' + rest.join('][') + ']';
           }
           return varInfo;
         });
 
-        var queryString = parts.map(function (varInfo) {
+        const queryString = parts.map(function (varInfo) {
           return varInfo.path + '=' + varInfo.val;
         }).join('&');
         if (urlEncode)
           return encodeURIComponent(queryString);
         else
           return queryString;
-      }
+      },
     },
     ajax: {
       request: function (ops) {
@@ -464,11 +389,11 @@ EBANX.http = (function () {
         ops.method = ops.method || 'get';
         ops.data = ops.data || {};
 
-        var api = {
+        const api = {
           /* jshint expr: true */
           host: {},
           process: function (ops) {
-            var self = this;
+            const self = this;
             this.xhr = null;
 
             if (window.ActiveXObject) {
@@ -480,7 +405,7 @@ EBANX.http = (function () {
             if (this.xhr) {
               this.xhr.onreadystatechange = function () {
                 if (self.xhr.readyState == 4) {
-                  var result = self.xhr.responseText || '{}';
+                  let result = self.xhr.responseText || '{}';
 
                   if (typeof ops.raw == 'undefined' && typeof JSON !== 'undefined') {
                     result = JSON.parse(result);
@@ -507,19 +432,19 @@ EBANX.http = (function () {
           always: function (callback) {
             this.alwaysCallback = callback;
             return this;
-          }
+          },
         };
         return api.process(ops);
-      }
+      },
     },
     injectJS: function (src, cb) {
-      var s = document.createElement('script');
+      const s = document.createElement('script');
       s.type = 'text/javascript';
       s.async = true;
       s.onload = cb;
       s.src = src;
       document.getElementsByTagName('head')[0].appendChild(s);
-    }
+    },
   };
 })();
 
@@ -529,7 +454,7 @@ EBANX.http = (function () {
  * @public
  */
 EBANX.card = (function () {
-  var $public = {};
+  const $public = {};
 
   /**
    *
@@ -555,12 +480,12 @@ EBANX.card = (function () {
    * @type {{createToken}}
    */
   $public.createToken = function (cardData, createTokenCallback) {
-    var response = {
+    const response = {
       data: {},
-      error: {}
+      error: {},
     };
 
-    var tokenSuccess = function (resp) {
+    const tokenSuccess = function (resp) {
       response.data = resp;
 
       EBANX.deviceFingerprint.setup(function (deviceId) {
@@ -570,13 +495,13 @@ EBANX.card = (function () {
       });
     };
 
-    var tokenError = function (err) {
+    const tokenError = function (err) {
       response.error.err = err;
 
       return createTokenCallback(response);
     };
 
-    var key = '';
+    let key = '';
 
     try {
       key = EBANX.config.getPublishableKey();
@@ -586,13 +511,13 @@ EBANX.card = (function () {
     }
 
     EBANX.validator.config.validatePublishableKey(key, function (validatorResponseJson) {
-      var validatorResponse = JSON.parse(validatorResponseJson);
+      const validatorResponse = JSON.parse(validatorResponseJson);
 
       if (!validatorResponse.success) {
         response.error.err = {
-          status: "ERROR",
-          status_code: "",
-          status_message: validatorResponse.body.error
+          status: 'ERROR',
+          status_code: '',
+          status_message: validatorResponse.body.error,
         };
         createTokenCallback(response);
         return;
@@ -651,8 +576,8 @@ EBANX.deviceFingerprint = {
         url: EBANX.utils.api.resources.fingerPrintResource().url,
         data: {
           publicIntegrationKey: EBANX.config.getPublishableKey(),
-          country: EBANX.config.getCountry()
-        }
+          country: EBANX.config.getCountry(),
+        },
       })
       .always(cb);
   },
@@ -667,49 +592,49 @@ EBANX.deviceFingerprint = {
   },
 
   postProviderSessionList: function () {
-    var ebanxSessionId = this.ebanxSessionId;
-    var providersSessionList = this.providerSessionList;
-    var onSuccessCallback = this.onSuccessCallback;
-    var onErrorCallback = this.onErrorCallback;
+    const ebanxSessionId = this.ebanxSessionId;
+    const providersSessionList = this.providerSessionList;
+    const onSuccessCallback = this.onSuccessCallback;
+    const onErrorCallback = this.onErrorCallback;
 
     this.ebanxSessionId = null;
     this.providerSessionList = [];
     this.onSuccessCallback = null;
     this.onErrorCallback = null;
 
-    var data = {
+    const data = {
       publicIntegrationKey: EBANX.config.getPublishableKey(),
       ebanx_session_id: ebanxSessionId,
-      providers: providersSessionList
+      providers: providersSessionList,
     };
 
-    var resource = EBANX.utils.api.resources.fingerPrintProvidersResource();
+    const resource = EBANX.utils.api.resources.fingerPrintProvidersResource();
 
     EBANX.http.ajax
       .request({
         url: resource.url,
         method: resource.method,
-        data: data
+        data: data,
       })
       .always(function (data, xhr) {
         if (xhr.status == 200) {
           onSuccessCallback(ebanxSessionId);
         } else {
-          onErrorCallback(new Error("postProviderSessionList - xhr.status != 200, received value: " + xhr.status));
+          onErrorCallback(new Error('postProviderSessionList - xhr.status != 200, received value: ' + xhr.status));
         }
       });
   },
 
   loadProvider: function (data, cb) {
     EBANX.http.injectJS(data.source, function () {
-      EBANX.deviceFingerprint[data.provider].setup(data.settings, function (session_id) {
+      EBANX.deviceFingerprint[data.provider].setup(data.settings, function (sessionId) {
         cb({
           provider: data.provider,
-          session_id: session_id
+          session_id: sessionId,
         });
       });
     });
-  }
+  },
 };
 
 export default EBANX;
