@@ -14,10 +14,11 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:jest/all',
+    'plugin:jest/recommended',
   ],
   rules: {
     "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-use-before-define": "off",
 
     'comma-dangle': ['error', 'always-multiline'],
     'eol-last': ['error', 'always'],

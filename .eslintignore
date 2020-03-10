@@ -1,1 +1,4 @@
 dist
+assets/**/*.js
+src/**/*.js
+**/*.json
