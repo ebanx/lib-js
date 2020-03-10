@@ -1,3 +1,7 @@
+import { config } from './config';
+import { http } from './http';
+import { utils } from './utils';
+
 export const deviceFingerprint = {
   ebanxSessionId: null,
   providerSessionList: [],
@@ -33,12 +37,12 @@ export const deviceFingerprint = {
   },
 
   getList: function (cb) {
-    EBANX.http.ajax
+    http.ajax
       .request({
-        url: EBANX.utils.api.resources.fingerPrintResource().url,
+        url: utils.api.resources.fingerPrintResource().url,
         data: {
-          publicIntegrationKey: EBANX.config.getPublishableKey(),
-          country: EBANX.config.getCountry(),
+          publicIntegrationKey: config.getPublishableKey(),
+          country: config.getCountry(),
         },
       })
       .always(cb);
@@ -65,14 +69,14 @@ export const deviceFingerprint = {
     this.onErrorCallback = null;
 
     const data = {
-      publicIntegrationKey: EBANX.config.getPublishableKey(),
+      publicIntegrationKey: config.getPublishableKey(),
       ebanx_session_id: ebanxSessionId,
       providers: providersSessionList,
     };
 
-    const resource = EBANX.utils.api.resources.fingerPrintProvidersResource();
+    const resource = utils.api.resources.fingerPrintProvidersResource();
 
-    EBANX.http.ajax
+    http.ajax
       .request({
         url: resource.url,
         method: resource.method,
@@ -88,8 +92,8 @@ export const deviceFingerprint = {
   },
 
   loadProvider: function (data, cb) {
-    EBANX.http.injectJS(data.source, function () {
-      EBANX.deviceFingerprint[data.provider].setup(data.settings, function (sessionId) {
+    http.injectJS(data.source, function () {
+      deviceFingerprint[data.provider].setup(data.settings, function (sessionId) {
         cb({
           provider: data.provider,
           session_id: sessionId,

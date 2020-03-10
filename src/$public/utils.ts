@@ -1,12 +1,45 @@
+import { config } from './config';
+import { errors } from './errors';
+import { validator } from './validator';
+
 export const utils = {
   api: {
+    url: function () {
+      return utils.api.path() + 'ws';
+    },
     path: function () {
-      return (EBANX.config.isLive() ? process.env.EBANX_API_PRODUCTION : process.env.EBANX_API_SANDBOX);
+      return (config.isLive() ? process.env.EBANX_API_PRODUCTION : process.env.EBANX_API_SANDBOX);
+    },
+    resources: {
+      createToken: function () {
+        return {
+          url: utils.api.url() + '/token',
+          method: 'post',
+        };
+      },
+      validPublicIntegrationKey: function () {
+        return {
+          url: utils.api.url() + '/merchantIntegrationProperties/isValidPublicIntegrationKey',
+          method: 'get',
+        };
+      },
+      fingerPrintResource: function () {
+        return {
+          url: utils.api.path() + 'fingerprint/',
+          method: 'get',
+        };
+      },
+      fingerPrintProvidersResource: function () {
+        return {
+          url: utils.api.path() + 'fingerprint/provider',
+          method: 'get',
+        };
+      },
     },
   },
   availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl', 'ec', 'bo'].join(', '),
   creditCardScheme: function (cardNumber: string) {
-    EBANX.validator.card.validateNumber(cardNumber);
+    validator.card.validateNumber(cardNumber);
 
     const schemes = {
       br: {
@@ -57,37 +90,6 @@ export const utils = {
       return result;
     }
 
-    throw new EBANX.errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
-  },
-};
-
-utils.api.url = function () {
-  return utils.api.path() + 'ws';
-};
-
-utils.api.resources = {
-  createToken: function () {
-    return {
-      url: utils.api.url() + '/token',
-      method: 'post',
-    };
-  },
-  validPublicIntegrationKey: function () {
-    return {
-      url: utils.api.url() + '/merchantIntegrationProperties/isValidPublicIntegrationKey',
-      method: 'get',
-    };
-  },
-  fingerPrintResource: function () {
-    return {
-      url: utils.api.path() + 'fingerprint/',
-      method: 'get',
-    };
-  },
-  fingerPrintProvidersResource: function () {
-    return {
-      url: utils.api.path() + 'fingerprint/provider',
-      method: 'get',
-    };
+    throw new errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
   },
 };
