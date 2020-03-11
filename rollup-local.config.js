@@ -6,13 +6,13 @@ export default {
   ...config,
   output: {
     file: `dist/ebanxpay-${project.version}.min.js`,
-    ...config.output
+    ...config.output,
   },
   plugins: [
     replace({
       'process.env.EBANX_API_PRODUCTION': JSON.stringify('https://api.ebanx.com.br/'),
-      'process.env.EBANX_API_SANDBOX': JSON.stringify('https://staging.ebanx.com.br/')
+      'process.env.EBANX_API_SANDBOX': JSON.stringify('https://staging.ebanx.com.br/'),
     }),
-    ...config.plugins
-  ]
+    ...config.plugins,
+  ],
 };
