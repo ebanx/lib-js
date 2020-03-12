@@ -5,14 +5,17 @@ phases:
     runtime-versions:
       nodejs: 10
     commands:
-      - echo Installing NPM ...
+      - echo Installing NPM Dependencies
       - npm ci
+  pre_build:
+      - echo Running linter
+      - npm run lint
+      - echo Running tests
+      - npm run test
   build:
     commands:
-      - echo Build started on `date` ...
+      - echo Build started on `date`
       - npm run build
-  post_build:
-    commands:
       - echo Build completed on `date`
 artifacts:
   files:

@@ -9,7 +9,7 @@
     "build": "npm run build:local && npm run build:xborder",
     "build:local": "rollup --config ./rollup-local.config.js",
     "build:xborder": "rollup --config ./rollup-xborder.config.js",
-    "lint": "eslint .",
+    "lint": "eslint './**/*.{js,ts}'",
     "test": "jest"
   },
   "repository": {
