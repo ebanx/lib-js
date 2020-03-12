@@ -24,7 +24,7 @@ export default {
     }),
     copy({
       targets: [
-        { src: 'assets/**/*', dest: 'dist' },
+        { src: 'assets/*', dest: 'dist/assets' },
       ],
     }),
     license({

@@ -7,8 +7,8 @@
     "prepare": "npm run build",
     "prebuild": "rimraf dist",
     "build": "npm run build:local && npm run build:xborder",
-    "build:local": "rollup --config ./rollup-local.config.js && cp dist/ebanxpay-*.js dist/ebanxpay-libjs-latest.min.js",
-    "build:xborder": "rollup --config ./rollup-xborder.config.js && cp dist/ebanx-*.js dist/ebanx-libjs-latest.min.js",
+    "build:local": "rollup --config ./rollup-local.config.js",
+    "build:xborder": "rollup --config ./rollup-xborder.config.js",
     "lint": "eslint .",
     "test": "jest"
   },
