@@ -6,7 +6,7 @@ phases:
       nodejs: 10
     commands:
       - echo Installing NPM ...
-      - npm install
+      - npm ci
   build:
     commands:
       - echo Build started on `date` ...
