@@ -35,7 +35,7 @@ export async function run({
 
 
   async function pendingAuthentication(threeDSecureToken: ThreeDSecureToken, threeDSecureInformation: ThreeDSecureInformation) {
-    const jwt = await cardinal.continueCCA(threeDSecureToken, threeDSecureInformation);
+    const jwt = await cardinal.validatePayment(threeDSecureToken, threeDSecureInformation);
     return buildThreeDSecureResponse(
       await ws.authenticationResults(threeDSecureToken, orderInformation, paymentInformation, jwt)
     );

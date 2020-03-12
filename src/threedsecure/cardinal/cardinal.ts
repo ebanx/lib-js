@@ -28,7 +28,7 @@ export async function init(threeDSecureToken: ThreeDSecureToken, card: Card) {
 }
 
 
-export function continueCCA(threeDSecureToken: ThreeDSecureToken, threeDSecureInformation: ThreeDSecureInformation): Promise<string> {
+export function validatePayment(threeDSecureToken: ThreeDSecureToken, threeDSecureInformation: ThreeDSecureInformation): Promise<string> {
   Cardinal.continue('cca', {
     AcsUrl: getAscUrl(threeDSecureInformation),
     Payload: getPareq(threeDSecureInformation),
@@ -40,11 +40,11 @@ export function continueCCA(threeDSecureToken: ThreeDSecureToken, threeDSecureIn
 
 
   return new Promise<string>((resolve, reject) => {
-    setTimeout(() => reject(new Error('Waited too much for DebitCardAuthentication')), 60000);
+    setTimeout(() => reject(new Error('Waited too much for payment validation')), 60000);
 
-    Cardinal.on('payments.validated', (decodedResponseData: unknown, tokenChallenge: string) => {
-      if (tokenChallenge) {
-        resolve(tokenChallenge);
+    Cardinal.on('payments.validated', (decodedResponseData: unknown, jwt: string) => {
+      if (jwt) {
+        resolve(jwt);
       } else {
         reject(null);
       }
