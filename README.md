@@ -14,6 +14,7 @@ Find more information in our [Dev Academy](https://www.ebanx.com/business/en/dev
 ## How to use EBANX Lib Js
 ### 1. Include Lib-Js in your webpage
 ```html
+<script type="text/javascript" src="https://js.ebanx.com/assets/songbird/songbird-<dev|prod>.js"></script><!-- use dev or prod according to your needs -->
 <script type="text/javascript" src="https://js.ebanx.com/ebanx-libjs-latest.min.js"></script>
 ```
 ### 2. Initialize EBANX Lib Js with your Merchant's Configurations
