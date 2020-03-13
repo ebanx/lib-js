@@ -1,5 +1,5 @@
 import { ThreeDSecureToken, Card, ThreeDSecureInformation } from '../types';
-import { getAscUrl, getPareq, getAuthenticationTransactionId } from '../three-d-secure-information';
+import { getAscUrl, getPareq, getAuthenticationTransactionId, ThreeDSecureError } from '../three-d-secure-information';
 
 export async function init(threeDSecureToken: ThreeDSecureToken, card: Card) {
   document.getElementById('Cardinal-ElementContainer')?.remove();
@@ -46,7 +46,7 @@ export function validatePayment(threeDSecureToken: ThreeDSecureToken, threeDSecu
       if (jwt) {
         resolve(jwt);
       } else {
-        reject(null);
+        reject(new ThreeDSecureError('Error to validate payment'));
       }
     });
   });

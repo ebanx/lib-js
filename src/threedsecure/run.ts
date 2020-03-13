@@ -1,5 +1,5 @@
 import * as ws from './ws';
-import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureToken, ThreeDSecureInformation } from './types';
+import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureToken, ThreeDSecureInformation, ThreeDSecureAuthentications } from './types';
 import * as cardinal from './cardinal';
 import { getEci, getCryptogram, getXId, ThreeDSecureError } from './three-d-secure-information';
 
@@ -15,7 +15,7 @@ export async function run({
   paymentInformation,
   personalIdentification,
   installmentTotalCount,
-}: RunArgs) {
+}: ThreeDSecureAuthentications) {
   const threeDSecureToken = await ws.generateToken(orderInformation.amountDetails);
 
   await cardinal.init(threeDSecureToken, paymentInformation.card);
