@@ -3,11 +3,17 @@ import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSec
 import * as cardinal from './cardinal';
 import { getEci, getCryptogram, getXId, ThreeDSecureError } from './three-d-secure-information';
 
-type RunArgs = {
-  orderInformation: OrderInformation;
-  paymentInformation: PaymentInformation;
-  personalIdentification: PersonalIdentification;
-  installmentTotalCount: string;
+interface ThreeDSecureOptions {
+  readonly orderInformation: OrderInformation;
+  readonly paymentInformation: PaymentInformation;
+  readonly personalIdentification: PersonalIdentification;
+  readonly installmentTotalCount: string;
+}
+
+interface ThreeDSecureResponse {
+  readonly three_eci: string;
+  readonly three_cryptogram: string;
+  readonly three_xid: string;
 }
 
 export async function run({
@@ -15,7 +21,7 @@ export async function run({
   paymentInformation,
   personalIdentification,
   installmentTotalCount,
-}: ThreeDSecureAuthentications) {
+}: ThreeDSecureOptions): Promise<ThreeDSecureResponse> {
   const threeDSecureToken = await ws.generateToken(orderInformation.amountDetails);
 
   await cardinal.init(threeDSecureToken, paymentInformation.card);
@@ -49,16 +55,14 @@ export async function run({
 }
 
 
-function buildThreeDSecureResponse(threeDSecureInformation: ThreeDSecureInformation) {
+function buildThreeDSecureResponse(threeDSecureInformation: ThreeDSecureInformation): ThreeDSecureResponse {
   if (threeDSecureInformation.status !== 'AUTHENTICATION_SUCCESSFUL') {
     throw new ThreeDSecureError(threeDSecureInformation.status);
   }
 
   return {
-    /* eslint-disable @typescript-eslint/camelcase */
-    three_eci: getEci(threeDSecureInformation),
-    three_cryptogram: getCryptogram(threeDSecureInformation),
-    three_xid: getXId(threeDSecureInformation),
-    /* eslint-enable @typescript-eslint/camelcase */
+    three_eci: getEci(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    three_cryptogram: getCryptogram(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    three_xid: getXId(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
   };
 }

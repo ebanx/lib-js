@@ -62,10 +62,3 @@ export interface Card {
 export interface PaymentInformation {
   readonly card: Card;
 }
-
-export interface ThreeDSecureAuthentications {
-  readonly orderInformation: OrderInformation;
-  readonly paymentInformation: PaymentInformation;
-  readonly personalIdentification: PersonalIdentification;
-  readonly installmentTotalCount: string;
-}
