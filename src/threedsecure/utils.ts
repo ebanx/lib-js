@@ -1,3 +1,5 @@
+import { ThreeDSecureError } from './three-d-secure-information';
+
 type Schema =
   | 'visa'
   | 'mastercard'
@@ -16,6 +18,6 @@ export function getCardType(schema: Schema): string {
     case 'elo':
       return '054';
     default:
-      throw new Error('Schema not mapped');
+      throw new ThreeDSecureError('Schema not mapped');
   }
 }

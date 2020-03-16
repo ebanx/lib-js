@@ -1,5 +1,5 @@
 import * as ws from './ws';
-import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureToken, ThreeDSecureInformation, ThreeDSecureAuthentications } from './types';
+import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureToken, ThreeDSecureInformation } from './types';
 import * as cardinal from './cardinal';
 import { getEci, getCryptogram, getXId, ThreeDSecureError } from './three-d-secure-information';
 
@@ -7,7 +7,7 @@ interface ThreeDSecureOptions {
   readonly orderInformation: OrderInformation;
   readonly paymentInformation: PaymentInformation;
   readonly personalIdentification: PersonalIdentification;
-  readonly installmentTotalCount: string;
+  readonly installmentTotalCount?: string;
 }
 
 interface ThreeDSecureResponse {
@@ -20,7 +20,7 @@ export async function run({
   orderInformation,
   paymentInformation,
   personalIdentification,
-  installmentTotalCount,
+  installmentTotalCount = '1',
 }: ThreeDSecureOptions): Promise<ThreeDSecureResponse> {
   const threeDSecureToken = await ws.generateToken(orderInformation.amountDetails);
 
@@ -41,7 +41,7 @@ export async function run({
 
 
   async function pendingAuthentication(threeDSecureToken: ThreeDSecureToken, threeDSecureInformation: ThreeDSecureInformation) {
-    const jwt = await cardinal.validatePayment(threeDSecureToken, threeDSecureInformation);
+    const jwt = await cardinal.validatePayment(threeDSecureInformation);
     return buildThreeDSecureResponse(
       await ws.authenticationResults(threeDSecureToken, orderInformation, paymentInformation, jwt)
     );
