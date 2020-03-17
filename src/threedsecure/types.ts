@@ -19,7 +19,7 @@ export interface CustomerAuthenticationInformation {
   readonly eciRaw: string;
   readonly ucaf: string;
   readonly ucafAuthenticationData: string;
-  readonly xid: string;
+  readonly xid?: string;
   readonly acsUrl: string;
   readonly pareq: string;
   readonly authenticationTransactionId: string;

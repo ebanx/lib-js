@@ -13,7 +13,7 @@ interface ThreeDSecureOptions {
 interface ThreeDSecureResponse {
   readonly three_eci: string;
   readonly three_cryptogram: string;
-  readonly three_xid: string;
+  readonly three_xid?: string;
 }
 
 export async function run({

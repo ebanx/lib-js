@@ -36,7 +36,7 @@ export function getCryptogram(info: ThreeDSecureInformation): string {
   throw new ThreeDSecureError();
 }
 
-export function getXId(info: ThreeDSecureInformation): string {
+export function getXId(info: ThreeDSecureInformation): string | undefined {
   return info.consumerAuthenticationInformation.xid;
 }
 
