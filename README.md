@@ -14,6 +14,7 @@ Find more information in our [Dev Academy](https://www.ebanx.com/business/en/dev
 ## How to use EBANX Lib Js
 ### 1. Include Lib-Js in your webpage
 ```html
+<script type="text/javascript" src="https://js.ebanx.com/assets/songbird/songbird-<dev|prod>.js"></script><!-- use dev or prod according to your needs -->
 <script type="text/javascript" src="https://js.ebanx.com/ebanx-libjs-latest.min.js"></script>
 ```
 ### 2. Initialize EBANX Lib Js with your Merchant's Configurations
@@ -52,10 +53,65 @@ function createToken() {
 }
 createToken();
 ```
+
+### 6. Perform a 3DS authentication with
+```javascript
+const orderInformation = {
+    "amountDetails": {
+        "totalAmount": "10.04",
+        "currency": "BRL"
+    },
+    "billTo": {
+        "address1": "Rua Estanislau Szarek",
+        "administrativeArea": "PR",
+        "country": "BR",
+        "email": "1584023172@exemplo.com.br",
+        "homePhone": "41999999999",
+        "locality": "Curitiba",
+        "postalCode": "81315380",
+        "mobilePhone": "41999999999"
+    }
+};
+
+// success with challenge
+const cardNumber = "4000000000001091";
+
+// success without challenge
+//const cardNumber = "4000000000001000";
+
+// failt with challenge
+//const cardNumber = "4000000000001109";
+
+const cardType = EBANX.threedsecure.getCardType(
+  EBANX.utils.creditCardScheme(cardNumber)
+);
+
+const paymentInformation = {
+    "card": {
+        "number": cardNumber,
+        "expirationMonth": "12",
+        "expirationYear": "34",
+        "type": cardType,
+        "holderName": "JOAO DA SILVA"
+    }
+};
+
+const personalIdentification = {
+    "id": "97370192024",
+    "type": "CPF"
+};
+
+const result = await EBANX.threedsecure.run({
+  orderInformation,
+  paymentInformation,
+  personalIdentification,
+});
+```
+
 ![Usage flow Diagram](./usage-flow-diagram.png)
 
 ## Architecture
-This library is composed by 7 main modules
+This library is composed by 8 main modules
 
 ### Card
 * The main interface for Card Tokenization
@@ -71,3 +127,5 @@ This library is composed by 7 main modules
 * Provides resources for API Addressess and available countries
 ### Validation
 * Validates API Key, countries and card data
+### Threedsecure
+* 3DS authentication
