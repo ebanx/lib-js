@@ -11,9 +11,9 @@ interface ThreeDSecureOptions {
 }
 
 interface ThreeDSecureResponse {
-  readonly three_eci: string;
-  readonly three_cryptogram: string;
-  readonly three_xid?: string;
+  readonly threeds_eci: string;
+  readonly threeds_cryptogram: string;
+  readonly threeds_xid?: string;
 }
 
 export async function run({
@@ -61,8 +61,8 @@ function buildThreeDSecureResponse(threeDSecureInformation: ThreeDSecureInformat
   }
 
   return {
-    three_eci: getEci(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
-    three_cryptogram: getCryptogram(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
-    three_xid: getXId(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    threeds_eci: getEci(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    threeds_cryptogram: getCryptogram(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    threeds_xid: getXId(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
   };
 }

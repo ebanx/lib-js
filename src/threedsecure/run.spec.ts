@@ -98,9 +98,9 @@ describe('run', () => {
 
       expect(cardinalMock.validatePayment.mock.calls.length).toBe(0);
 
-      expect(result.three_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
-      expect(result.three_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
-      expect(result.three_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
+      expect(result.threeds_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
+      expect(result.threeds_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
+      expect(result.threeds_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
     });
 
     it('should call ws.generateToken once', async () => {
@@ -141,9 +141,9 @@ describe('run', () => {
 
       expect(cardinalMock.validatePayment.mock.calls.length).toBe(0);
 
-      expect(result.three_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
-      expect(result.three_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
-      expect(result.three_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
+      expect(result.threeds_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
+      expect(result.threeds_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
+      expect(result.threeds_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
     });
 
     it('should call cardinal.init once', async () => {
@@ -188,9 +188,9 @@ describe('run', () => {
 
     it('should authenticate', async () => {
       const result = await run(options);
-      expect(result.three_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
-      expect(result.three_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
-      expect(result.three_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
+      expect(result.threeds_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
+      expect(result.threeds_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
+      expect(result.threeds_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
     });
 
     it('should call ws.generateToken once', async () => {
