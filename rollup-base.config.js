@@ -3,7 +3,7 @@ import { terser } from 'rollup-plugin-terser';
 import copy from 'rollup-plugin-copy';
 import html from 'rollup-plugin-generate-html-template';
 import json from '@rollup/plugin-json';
-import license from '@rollup/plugin-replace';
+import license from 'rollup-plugin-license';
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
