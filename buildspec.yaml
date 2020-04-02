@@ -8,6 +8,7 @@ phases:
       - echo Installing NPM Dependencies
       - npm ci
   pre_build:
+    commands:
       - echo Running linter
       - npm run lint
       - echo Running tests
