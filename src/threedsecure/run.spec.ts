@@ -6,7 +6,6 @@ jest.mock('./ws');
 import * as ws from './ws';
 import * as cardinal from './cardinal';
 
-import { getCardType } from './utils';
 import { PersonalIdentification, OrderInformation, PaymentInformation, ThreeDSecureInformation, ThreeDSecureToken } from './types';
 import { run } from './run';
 
@@ -35,7 +34,6 @@ const paymentInformation: PaymentInformation = {
     number: '4000000000001091',
     expirationMonth: '12',
     expirationYear: '34',
-    type: getCardType('visa'),
     holderName: 'JOAO DA SILVA',
   },
 };

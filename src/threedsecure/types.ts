@@ -55,7 +55,7 @@ export interface Card {
   readonly number: string;
   readonly expirationMonth: string;
   readonly expirationYear: string;
-  readonly type: string;
+  readonly type?: string;
   readonly holderName: string;
 }
 
