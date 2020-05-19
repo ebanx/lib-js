@@ -1,4 +1,5 @@
 import { ThreeDSecureError } from './three-d-secure-information';
+import { ThreeDSecureOptions } from './types';
 
 type Schema =
   | 'visa'
@@ -20,4 +21,14 @@ export function getCardType(schema: Schema): string {
     default:
       throw new ThreeDSecureError('Schema not mapped');
   }
+}
+
+export async function checkIfShouldAuthenticate(options: ThreeDSecureOptions): Promise<boolean> {
+  const CARD_BIN_WHITELIST = [
+    '506722',
+  ];
+
+  const cardBin = options.paymentInformation.card.number.substr(0, 6);
+
+  return CARD_BIN_WHITELIST.includes(cardBin);
 }
