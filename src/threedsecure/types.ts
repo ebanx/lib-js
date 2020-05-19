@@ -1,3 +1,10 @@
+export interface ThreeDSecureOptions {
+  readonly orderInformation: OrderInformation;
+  readonly paymentInformation: PaymentInformation;
+  readonly personalIdentification: PersonalIdentification;
+  readonly installmentTotalCount?: string;
+}
+
 export interface ThreeDSecureToken {
   readonly accessToken: string;
   readonly paymentId: string;

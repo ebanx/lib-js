@@ -1,14 +1,7 @@
 import * as ws from './ws';
-import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureToken, ThreeDSecureInformation } from './types';
+import { ThreeDSecureToken, ThreeDSecureInformation, ThreeDSecureOptions } from './types';
 import * as cardinal from './cardinal';
 import { getEci, getCryptogram, getXId, ThreeDSecureError } from './three-d-secure-information';
-
-interface ThreeDSecureOptions {
-  readonly orderInformation: OrderInformation;
-  readonly paymentInformation: PaymentInformation;
-  readonly personalIdentification: PersonalIdentification;
-  readonly installmentTotalCount?: string;
-}
 
 interface ThreeDSecureResponse {
   readonly threeds_eci: string;

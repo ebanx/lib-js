@@ -101,11 +101,17 @@ const personalIdentification = {
     "type": "CPF"
 };
 
-const result = await EBANX.threedsecure.run({
+const options = {
   orderInformation,
   paymentInformation,
   personalIdentification,
-});
+};
+
+const shouldAuthenticate = await EBANX.threedsecure.checkIfShouldAuthenticate(options);
+
+if (shouldAuthenticate) {
+  const result = await EBANX.threedsecure.run(options);
+}
 ```
 
 ![Usage flow Diagram](./usage-flow-diagram.png)
