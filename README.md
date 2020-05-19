@@ -82,16 +82,11 @@ const cardNumber = "4000000000001091";
 // failt with challenge
 //const cardNumber = "4000000000001109";
 
-const cardType = EBANX.threedsecure.getCardType(
-  EBANX.utils.creditCardScheme(cardNumber)
-);
-
 const paymentInformation = {
     "card": {
         "number": cardNumber,
         "expirationMonth": "12",
         "expirationYear": "34",
-        "type": cardType,
         "holderName": "JOAO DA SILVA"
     }
 };
