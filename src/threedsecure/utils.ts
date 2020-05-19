@@ -30,5 +30,5 @@ export async function checkIfShouldAuthenticate(options: ThreeDSecureOptions): P
 
   const cardBin = options.paymentInformation.card.number.substr(0, 6);
 
-  return CARD_BIN_WHITELIST.includes(cardBin);
+  return !CARD_BIN_WHITELIST.includes(cardBin);
 }

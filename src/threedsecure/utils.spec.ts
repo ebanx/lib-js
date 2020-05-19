@@ -20,18 +20,18 @@ describe('getCardType', () => {
 });
 
 describe('checkIfShouldPerformAuthentication', () => {
-  it('should return false for card numbers with bin other than 506722', async () => {
+  it('should return true for card numbers with bin other than 506722', async () => {
     const options = getThreeDSecureOptions();
     Object.assign(options.paymentInformation.card, { number: '40672223452452467543' });
     await expect(checkIfShouldAuthenticate(options))
-      .resolves.toBe(false);
+      .resolves.toBe(true);
   });
 
-  it('should return true for card numbers with bin 506722', async () => {
+  it('should return false for card numbers with bin 506722', async () => {
     const options = getThreeDSecureOptions();
     Object.assign(options.paymentInformation.card, { number: '50672223452452467543' });
     await expect(checkIfShouldAuthenticate(options))
-      .resolves.toBe(true);
+      .resolves.toBe(false);
   });
 });
 
