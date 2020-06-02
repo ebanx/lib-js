@@ -313,7 +313,7 @@ EBANX.utils = (function () {
         return (EBANX.config.isLive() ? process.env.EBANX_API_PRODUCTION : process.env.EBANX_API_SANDBOX);
       }
     },
-    availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl', 'ec', 'bo'].join(', '),
+    availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl', 'ec', 'bo', 'uy'].join(', '),
     creditCardScheme: function (cardNumber) {
       EBANX.validator.card.validateNumber(cardNumber);
 
