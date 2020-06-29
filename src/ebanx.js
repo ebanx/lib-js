@@ -281,13 +281,18 @@ EBANX.tokenize = (function () {
     card: {
       token: function (cardData, cb, errorCallback) {
         var tokenResource = EBANX.utils.api.resources.createToken();
-
+        var paymentTypeCode;
+        try {
+          paymentTypeCode = EBANX.utils.creditCardScheme(cardData.card_number);
+        } catch(ex) {
+          paymentTypeCode = '';
+        }
         EBANX.http.ajax.request({
           url: tokenResource.url,
           method: tokenResource.method,
           data: JSON.stringify({
             public_integration_key: EBANX.config.getPublishableKey(),
-            payment_type_code: EBANX.utils.creditCardScheme(cardData.card_number),
+            payment_type_code: paymentTypeCode,
             country: EBANX.config.getCountry(),
             card: cardData
           })
@@ -369,8 +374,7 @@ EBANX.utils = (function () {
         return result;
       }
 
-      // No brand found
-      return '';
+      throw new EBANX.errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
     }
   };
 
