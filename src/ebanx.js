@@ -53,6 +53,9 @@ const EBANX = (function () {
           'mx': 'es',
           'co': 'es',
           'ar': 'es',
+          'cl': 'es',
+          'pe': 'es',
+          'uy': 'es',
         };
 
         return countryLocale[EBANX.config.getCountry()];
