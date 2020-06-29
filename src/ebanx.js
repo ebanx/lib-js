@@ -369,7 +369,8 @@ EBANX.utils = (function () {
         return result;
       }
 
-      throw new EBANX.errors.InvalidValueFieldError('BP-DR-S-75', 'card_number');
+      // No brand found
+      return '';
     }
   };
 
