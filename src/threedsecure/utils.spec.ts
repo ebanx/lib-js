@@ -1,3 +1,4 @@
+import faker from 'faker';
 import { getCardType, checkIfShouldAuthenticate } from './utils';
 import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureOptions } from './types';
 
@@ -20,18 +21,30 @@ describe('getCardType', () => {
 });
 
 describe('checkIfShouldPerformAuthentication', () => {
-  it('should return true for card numbers with bin other than 506722', async () => {
+  it('should return true for card numbers with unknown bin', async () => {
     const options = getThreeDSecureOptions();
     Object.assign(options.paymentInformation.card, { number: '40672223452452467543' });
     await expect(checkIfShouldAuthenticate(options))
       .resolves.toBe(true);
   });
 
-  it('should return false for card numbers with bin 506722', async () => {
-    const options = getThreeDSecureOptions();
-    Object.assign(options.paymentInformation.card, { number: '50672223452452467543' });
-    await expect(checkIfShouldAuthenticate(options))
-      .resolves.toBe(false);
+  it('should return false for Caixa\'s bins', async () => {
+    const caixaBins = [
+      '506722',
+      '509023',
+      '509030',
+      '509105',
+    ];
+
+    for (const bin of caixaBins) {
+      const number = `${bin}${faker.helpers.replaceSymbolWithNumber('##########')}`;
+
+      const options = getThreeDSecureOptions();
+      Object.assign(options.paymentInformation.card, { number });
+
+      await expect(checkIfShouldAuthenticate(options))
+        .resolves.toBe(false);
+    }
   });
 });
 

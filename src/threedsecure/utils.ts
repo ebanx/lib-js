@@ -24,11 +24,14 @@ export function getCardType(schema: Schema): string {
 }
 
 export async function checkIfShouldAuthenticate(options: ThreeDSecureOptions): Promise<boolean> {
-  const CARD_BIN_WHITELIST = [
+  const CAIXA_CARD_BIN_WHITELIST = [
     '506722',
+    '509023',
+    '509030',
+    '509105',
   ];
 
   const cardBin = options.paymentInformation.card.number.substr(0, 6);
 
-  return !CARD_BIN_WHITELIST.includes(cardBin);
+  return !CAIXA_CARD_BIN_WHITELIST.includes(cardBin);
 }
