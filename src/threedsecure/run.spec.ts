@@ -73,6 +73,8 @@ describe('run', () => {
         ucaf: faker.random.uuid(),
         ucafAuthenticationData: faker.random.uuid(),
         xid: faker.random.uuid(),
+        version: '2',
+        directoryServerTransactionId: faker.random.uuid(),
       },
     };
 
@@ -99,6 +101,8 @@ describe('run', () => {
       expect(result.threeds_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
       expect(result.threeds_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
       expect(result.threeds_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
+      expect(result.threeds_version).toBe(threeDSecureInformation?.consumerAuthenticationInformation.version);
+      expect(result.threeds_trxid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.directoryServerTransactionId);
     });
 
     it('should call ws.generateToken once', async () => {
@@ -142,6 +146,8 @@ describe('run', () => {
       expect(result.threeds_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
       expect(result.threeds_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
       expect(result.threeds_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
+      expect(result.threeds_version).toBe(threeDSecureInformation?.consumerAuthenticationInformation.version);
+      expect(result.threeds_trxid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.directoryServerTransactionId);
     });
 
     it('should call cardinal.init once', async () => {
@@ -189,6 +195,8 @@ describe('run', () => {
       expect(result.threeds_cryptogram).toBe(threeDSecureInformation?.consumerAuthenticationInformation.ucaf);
       expect(result.threeds_eci).toBe(threeDSecureInformation?.consumerAuthenticationInformation.eci);
       expect(result.threeds_xid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.xid);
+      expect(result.threeds_version).toBe(threeDSecureInformation?.consumerAuthenticationInformation.version);
+      expect(result.threeds_trxid).toBe(threeDSecureInformation?.consumerAuthenticationInformation.directoryServerTransactionId);
     });
 
     it('should call ws.generateToken once', async () => {

@@ -1,12 +1,14 @@
 import * as ws from './ws';
 import { ThreeDSecureToken, ThreeDSecureInformation, ThreeDSecureOptions } from './types';
 import * as cardinal from './cardinal';
-import { getEci, getCryptogram, getXId, ThreeDSecureError } from './three-d-secure-information';
+import { getEci, getCryptogram, getXId, getVersion, getTrxId, ThreeDSecureError } from './three-d-secure-information';
 
 interface ThreeDSecureResponse {
   readonly threeds_eci: string;
   readonly threeds_cryptogram: string;
   readonly threeds_xid?: string;
+  readonly threeds_version?: string;
+  readonly threeds_trxid?: string;
 }
 
 export async function run({
@@ -57,5 +59,7 @@ function buildThreeDSecureResponse(threeDSecureInformation: ThreeDSecureInformat
     threeds_eci: getEci(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
     threeds_cryptogram: getCryptogram(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
     threeds_xid: getXId(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    threeds_version: getVersion(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
+    threeds_trxid: getTrxId(threeDSecureInformation),// eslint-disable-line @typescript-eslint/camelcase
   };
 }

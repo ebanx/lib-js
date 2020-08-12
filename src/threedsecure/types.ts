@@ -30,6 +30,8 @@ export interface CustomerAuthenticationInformation {
   readonly acsUrl: string;
   readonly pareq: string;
   readonly authenticationTransactionId: string;
+  readonly version?: string;
+  readonly directoryServerTransactionId?: string;
 }
 
 export interface PersonalIdentification {
