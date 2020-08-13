@@ -51,3 +51,11 @@ export function getPareq(info: ThreeDSecureInformation): string {
 export function getAuthenticationTransactionId(info: ThreeDSecureInformation): string {
   return info.consumerAuthenticationInformation.authenticationTransactionId;
 }
+
+export function getVersion(info: ThreeDSecureInformation): string | undefined {
+  return info.consumerAuthenticationInformation.version;
+}
+
+export function getTrxId(info: ThreeDSecureInformation): string | undefined {
+  return info.consumerAuthenticationInformation.directoryServerTransactionId;
+}
