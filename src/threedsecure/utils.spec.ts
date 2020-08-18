@@ -34,6 +34,7 @@ describe('checkIfShouldPerformAuthentication', () => {
       '509023',
       '509030',
       '509105',
+      '439267',
     ];
 
     for (const bin of caixaBins) {
