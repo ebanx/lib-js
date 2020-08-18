@@ -29,6 +29,7 @@ export async function checkIfShouldAuthenticate(options: ThreeDSecureOptions): P
     '509023',
     '509030',
     '509105',
+    '439267',
   ];
 
   const cardBin = options.paymentInformation.card.number.substr(0, 6);
