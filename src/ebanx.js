@@ -130,9 +130,22 @@ EBANX.validator = (function () {
               public_integration_key: key
             }
           })
-          .always(function (res) {
-            cachedResults.publicKey[key] = res;
-            cb(res);
+          .always(function(res, xhr) {
+            if (xhr.status == 200) { //receive happy response, just cache it and callback.
+              cachedResults.publicKey[key] = res;
+              cb(res);
+            } else {
+              //if there is server response, use it. 
+              //Otherwise, emulate an API response if there is a network error. so that the subsequence code can handle it in a unique way.
+              var result = (res && res != '{}') ? res : JSON.stringify({
+                'success':false,
+                'body': {
+                  'error': xhr.statusText || 'NETWORK ERROR'
+                }
+              });
+              cb(result);
+            }
+
           });
       },
       /**
