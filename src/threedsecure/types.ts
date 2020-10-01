@@ -71,3 +71,14 @@ export interface Card {
 export interface PaymentInformation {
   readonly card: Card;
 }
+
+export interface DeviceInformation {
+  readonly httpBrowserColorDepth: string;
+  readonly httpBrowserJavaEnabled: string;
+  readonly httpBrowserJavaScriptEnabled: string;
+  readonly httpBrowserLanguage: string;
+  readonly httpBrowserScreenHeight: string;
+  readonly httpBrowserScreenWidth: string;
+  readonly httpBrowserTimeDifference: string;
+  readonly userAgentBrowserValue: string;
+}

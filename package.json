@@ -10,7 +10,7 @@
     "build:local": "rollup --config ./rollup-local.config.js",
     "build:xborder": "rollup --config ./rollup-xborder.config.js",
     "lint": "eslint './**/*.{js,ts}'",
-    "test": "jest"
+    "test": "jest --env=jsdom"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,5 @@
 import * as ws from './ws';
-import { ThreeDSecureToken, ThreeDSecureInformation, ThreeDSecureOptions } from './types';
+import { ThreeDSecureToken, ThreeDSecureInformation, ThreeDSecureOptions, DeviceInformation } from './types';
 import * as cardinal from './cardinal';
 import { getEci, getCryptogram, getXId, getVersion, getTrxId, ThreeDSecureError } from './three-d-secure-information';
 
@@ -21,7 +21,8 @@ export async function run({
 
   await cardinal.init(threeDSecureToken, paymentInformation.card);
 
-  const threeDSecureInformation = await ws.authentications(threeDSecureToken, orderInformation, paymentInformation, personalIdentification, installmentTotalCount);
+  const deviceInformation = getDeviceInformation();
+  const threeDSecureInformation = await ws.authentications(threeDSecureToken, orderInformation, paymentInformation, personalIdentification, installmentTotalCount, deviceInformation);
 
   switch (threeDSecureInformation.status) {
     case 'PENDING_AUTHENTICATION':
@@ -49,6 +50,18 @@ export async function run({
   }
 }
 
+function getDeviceInformation(): DeviceInformation {
+  return  {
+    httpBrowserColorDepth: window.screen['colorDepth'].toString(),
+    httpBrowserJavaEnabled: window.navigator['javaEnabled']() ? 'Y' : 'N',
+    httpBrowserJavaScriptEnabled: 'Y',
+    httpBrowserLanguage: window.navigator['language'],
+    httpBrowserScreenHeight: window['innerHeight'].toString(),
+    httpBrowserScreenWidth: window['innerWidth'].toString(),
+    httpBrowserTimeDifference: new Date().getTimezoneOffset().toString(),
+    userAgentBrowserValue: window.navigator['userAgent'],
+  };
+}
 
 function buildThreeDSecureResponse(threeDSecureInformation: ThreeDSecureInformation): ThreeDSecureResponse {
   if (threeDSecureInformation.status !== 'AUTHENTICATION_SUCCESSFUL') {
