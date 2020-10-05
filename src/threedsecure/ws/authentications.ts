@@ -1,4 +1,4 @@
-import { ThreeDSecureToken, PaymentInformation, OrderInformation, PersonalIdentification, ThreeDSecureInformation } from '../types';
+import { ThreeDSecureToken, PaymentInformation, OrderInformation, PersonalIdentification, ThreeDSecureInformation, DeviceInformation } from '../types';
 
 export async function authentications(
   threeDSecureToken: ThreeDSecureToken,
@@ -6,6 +6,7 @@ export async function authentications(
   paymentInformation: PaymentInformation,
   personalIdentification: PersonalIdentification,
   installmentTotalCount = '1',
+  deviceInformation: DeviceInformation,
 ): Promise<ThreeDSecureInformation> {
 
 
@@ -22,6 +23,7 @@ export async function authentications(
     },
     personalIdentification,
     paymentInformation,
+    deviceInformation,
   };
 
   const url = new URL('/ws/threedsecureserver-authentications', EBANX.utils.api.path());
