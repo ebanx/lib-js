@@ -11,7 +11,7 @@ export default {
   ],
   plugins: [
     replace({
-      'process.env.EBANX_API_PRODUCTION': JSON.stringify('https://api.ebanxpay.com/'),
+      'process.env.EBANX_API_PRODUCTION': JSON.stringify('https://customer.ebanx.com/'),
       'process.env.EBANX_API_SANDBOX': JSON.stringify('https://sandbox.ebanxpay.com/'),
     }),
     ...config.plugins,
