@@ -135,7 +135,7 @@ EBANX.validator = (function () {
               cachedResults.publicKey[key] = res;
               cb(res);
             } else {
-              //if there is server response, use it. 
+              //if there is server response, use it.
               //Otherwise, emulate an API response if there is a network error. so that the subsequence code can handle it in a unique way.
               var result = (res && res != '{}') ? res : JSON.stringify({
                 'success':false,
@@ -332,6 +332,9 @@ EBANX.utils = (function () {
     api: {
       path: function () {
         return (EBANX.config.isLive() ? process.env.EBANX_API_PRODUCTION : process.env.EBANX_API_SANDBOX);
+      },
+      pathLocalLatam: function () {
+        return (EBANX.config.isLive() ? process.env.EBANX_API_LOCAL_LATAM_PRODUCTION : process.env.EBANX_API_LOCAL_LATAM_SANDBOX);
       }
     },
     availableCountries: ['br', 'mx', 'co', 'ar', 'pe', 'cl', 'ec', 'bo', 'uy'].join(', '),
@@ -417,6 +420,18 @@ EBANX.utils = (function () {
     fingerPrintProvidersResource: function () {
       return {
         url: utilsModule.api.path() + 'fingerprint/provider',
+        method: 'get'
+      };
+    },
+    fingerPrintResourceLocalLatam: function () {
+      return {
+        url: utilsModule.api.pathLocalLatam() + 'fingerprint/',
+        method: 'get'
+      };
+    },
+    fingerPrintProvidersResourceLocalLatam: function () {
+      return {
+        url: utilsModule.api.pathLocalLatam() + 'fingerprint/provider',
         method: 'get'
       };
     }
@@ -674,6 +689,15 @@ EBANX.deviceFingerprint = {
         }
       })
       .always(cb);
+    EBANX.http.ajax
+      .request({
+        url: EBANX.utils.api.resources.fingerPrintResourceLocalLatam().url,
+        data: {
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
+          country: EBANX.config.getCountry()
+        }
+      })
+      .always(cb);
   },
 
   saveProviderSessionList: function (providerSession) {
@@ -703,6 +727,7 @@ EBANX.deviceFingerprint = {
     };
 
     var resource = EBANX.utils.api.resources.fingerPrintProvidersResource();
+    var statusCrossBorder = null;
 
     EBANX.http.ajax
       .request({
@@ -711,7 +736,19 @@ EBANX.deviceFingerprint = {
         data: data
       })
       .always(function (data, xhr) {
-        if (xhr.status == 200) {
+        statusCrossBorder = xhr.status;
+      });
+
+    var resourceLocalLatam = EBANX.utils.api.resources.fingerPrintProvidersResourceLocalLatam();
+
+    EBANX.http.ajax
+      .request({
+        url: resourceLocalLatam.url,
+        method: resourceLocalLatam.method,
+        data: data
+      })
+      .always(function (data, xhr) {
+        if (xhr.status == 200 || statusCrossBorder == 200) {
           onSuccessCallback(ebanxSessionId);
         } else {
           onErrorCallback(new Error("postProviderSessionList - xhr.status != 200, received value: " + xhr.status));
