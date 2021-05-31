@@ -639,7 +639,7 @@ EBANX.deviceFingerprint = {
 
   setup: function (onSuccess, onError) {
     this.onSuccessCallback = onSuccess || console.log;
-    this.onErrorCallback = onError || console.error;
+    this.onErrorCallback = onError;
 
     this.getList(function (providersList) {
       try {
@@ -670,7 +670,8 @@ EBANX.deviceFingerprint = {
         url: EBANX.utils.api.resources.fingerPrintResource().url,
         data: {
           publicIntegrationKey: EBANX.config.getPublishableKey(),
-          country: EBANX.config.getCountry()
+          country: EBANX.config.getCountry(),
+          origin: window.location.pathname,
         }
       })
       .always(cb);
@@ -713,8 +714,10 @@ EBANX.deviceFingerprint = {
       .always(function (data, xhr) {
         if (xhr.status == 200) {
           onSuccessCallback(ebanxSessionId);
-        } else {
+        } else if (onErrorCallback) {
           onErrorCallback(new Error("postProviderSessionList - xhr.status != 200, received value: " + xhr.status));
+        } else {
+          onSuccessCallback(ebanxSessionId);
         }
       });
   },
