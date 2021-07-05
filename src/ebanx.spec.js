@@ -92,3 +92,25 @@ describe('Device Fingerprint', () => {
    EBANX.deviceFingerprint.setup((id) => { expect(id).toBe('fakesession'); }, (error) => { fail('onError called');});
  });
 });
+
+describe('Utils', () => {
+  describe('creditCardScheme', () => {
+    it.each([
+      ['diners',     '30569309025904'],
+      ['amex',       '378282749798722'],
+      ['visa',       '4111111111111111'],
+      ['visa',       '4111115666052208'],
+      ['mastercard', '5555556355564617'],
+      ['mastercard', '2306505278551556'],
+      ['elo',        '6362970000457013'],
+      ['elo',        '6362971747129170'],
+      ['hipercard',  '6062825624254001'],
+      ['discover',   '6011111111111117'],
+      ['aura',       '5078601870000127985'],
+    ])('returns %s for card number %s', (expectedBrand, cardNumber) => {
+      const brand = EBANX.utils.creditCardScheme(cardNumber);
+
+      expect(brand).toEqual(expectedBrand);
+    });
+  });
+});
