@@ -1,6 +1,6 @@
 {
   "name": "@ebanx/lib-js",
-  "version": "1.15.4",
+  "version": "1.15.5",
   "description": "EBANX Lib JS",
   "main": "dist/ebanx-libjs-latest.min.js",
   "scripts": {
