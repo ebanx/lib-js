@@ -85,7 +85,7 @@ describe('run', () => {
     jest.clearAllMocks();
   });
 
-  describe('flow without challenge and and without validation', () => {
+  describe('flow without challenge and without validation', () => {
     beforeEach(() => {
       wsMock.authentications.mockReturnValueOnce(Promise.resolve({
         ...threeDSecureInformation,
