@@ -70,6 +70,7 @@ export interface Card {
 
 export interface PaymentInformation {
   readonly card: Card;
+  readonly paymentMethod?: string;
 }
 
 export interface DeviceInformation {

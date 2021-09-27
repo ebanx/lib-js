@@ -1,4 +1,5 @@
 import { ThreeDSecureToken, PaymentInformation, OrderInformation, PersonalIdentification, ThreeDSecureInformation, DeviceInformation } from '../types';
+import { getPaymentMethod } from '../utils';
 
 export async function authentications(
   threeDSecureToken: ThreeDSecureToken,
@@ -19,7 +20,7 @@ export async function authentications(
     orderInformation,
     consumerAuthenticationInformation: {
       installmentTotalCount,
-      overridePaymentMethod: 'DEBIT',
+      overridePaymentMethod: getPaymentMethod(paymentInformation.paymentMethod),
     },
     personalIdentification,
     paymentInformation,

@@ -1,4 +1,5 @@
 import { ThreeDSecureToken, AmountDetails, PaymentInformation } from '../types';
+import { getPaymentMethod } from '../utils';
 
 export async function generateToken(amountDetails: AmountDetails, paymentInformation: PaymentInformation): Promise<ThreeDSecureToken> {
   const url = new URL('/ws/threedsecureserver-generateToken', EBANX.utils.api.path());
@@ -8,7 +9,7 @@ export async function generateToken(amountDetails: AmountDetails, paymentInforma
     currency: amountDetails.currency,
     orderNumber: null,
     consumerAuthenticationInformation: {
-      overridePaymentMethod: 'DEBIT',
+      overridePaymentMethod: getPaymentMethod(paymentInformation.paymentMethod),
     },
     publicIntegrationKey: EBANX.config.getPublishableKey(),
     paymentInformation: paymentInformation,
