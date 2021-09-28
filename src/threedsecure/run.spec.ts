@@ -36,6 +36,7 @@ const paymentInformation: PaymentInformation = {
     expirationYear: '34',
     holderName: 'JOAO DA SILVA',
   },
+  paymentMethod: 'debitcard',
 };
 
 const personalIdentification: PersonalIdentification = {

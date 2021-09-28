@@ -1,5 +1,5 @@
 import faker from 'faker';
-import { getCardType, checkIfShouldAuthenticate } from './utils';
+import { getCardType, checkIfShouldAuthenticate, getPaymentMethod } from './utils';
 import { OrderInformation, PaymentInformation, PersonalIdentification, ThreeDSecureOptions } from './types';
 
 describe('getCardType', () => {
@@ -49,6 +49,23 @@ describe('checkIfShouldPerformAuthentication', () => {
   });
 });
 
+describe('getPaymentMethod', () => {
+  it('should return DEBIT for debitcard', () => {
+    expect(getPaymentMethod('debitcard')).toBe('DEBIT');
+  });
+
+  it('should return CREDIT for creditcard', () => {
+    expect(getPaymentMethod('creditcard')).toBe('CREDIT');
+  });
+
+  it('should return DEBIT for any other card type', () => {
+    expect(getPaymentMethod('anyother')).toBe('DEBIT');
+  });
+
+  it('should return DEBIT when card type is empty', () => {
+    expect(getPaymentMethod()).toBe('DEBIT');
+  });
+});
 
 function getThreeDSecureOptions() {
   const orderInformation: OrderInformation = {

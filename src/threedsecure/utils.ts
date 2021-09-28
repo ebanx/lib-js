@@ -36,3 +36,14 @@ export async function checkIfShouldAuthenticate(options: ThreeDSecureOptions): P
 
   return !CAIXA_CARD_BIN_WHITELIST.includes(cardBin);
 }
+
+export function getPaymentMethod(paymentType?: string): string {
+  switch (paymentType) {
+    case 'debitcard':
+      return 'DEBIT';
+    case 'creditcard':
+      return 'CREDIT';
+  }
+
+  return 'DEBIT';
+}
