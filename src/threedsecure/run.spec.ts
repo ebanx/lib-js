@@ -188,7 +188,7 @@ describe('run', () => {
         status: 'AUTHENTICATION_SUCCESSFUL',
       }) as ReturnType<typeof ws.authentications>);
 
-      cardinalMock.validatePayment.mockReturnValueOnce(Promise.resolve(faker.random.uuid()) as ReturnType<typeof cardinal.validatePayment>);
+      cardinalMock.validatePayment.mockReturnValueOnce(Promise.resolve({jwt: faker.random.uuid(), actionCode: 'SUCCESS'}) as ReturnType<typeof cardinal.validatePayment>);
     });
 
     it('should authenticate', async () => {
@@ -224,5 +224,42 @@ describe('run', () => {
       await run(options);
       expect(wsMock.authenticationResults.mock.calls.length).toBe(1);
     });
+
+    it('should not call ws.updateRecordStatus', async () => {
+      await run(options);
+      expect(wsMock.updateRecordStatus.mock.calls.length).toBe(0);
+    });
   });
+
+  describe('flow with challenge and problem in validation', () => {
+    beforeEach(() => {
+      wsMock.authentications.mockReturnValueOnce(Promise.resolve({
+        ...threeDSecureInformation,
+        status: 'PENDING_AUTHENTICATION',
+      }) as ReturnType<typeof ws.authentications>);
+
+      wsMock.authenticationResults.mockReturnValueOnce(Promise.resolve({
+        ...threeDSecureInformation,
+        status: 'AUTHENTICATION_SUCCESSFUL',
+      }) as ReturnType<typeof ws.authentications>);
+    });
+
+    it('should call ws.updateRecordStatus once when an error is returned from Cardinal', async () => {
+      cardinalMock.validatePayment.mockReturnValueOnce(Promise.resolve({jwt: faker.random.uuid(), actionCode: 'FAILURE'}) as ReturnType<typeof cardinal.validatePayment>);
+      await expect(run(options)).rejects.toThrow(new Error('AUTHENTICATION_FAILED'));
+      expect(wsMock.updateRecordStatus.mock.calls.length).toBe(1);
+    });
+
+    it('should call ws.updateRecordStatus once when timeout', async () => {
+      jest.useFakeTimers();
+      cardinalMock.validatePayment.mockImplementationOnce(async () => {
+        jest.advanceTimersByTime(60001);
+        return {jwt: faker.random.uuid()};
+      });
+
+      await expect(run(options)).rejects.toThrow(new Error('Waited too much for payment validation'));
+      expect(wsMock.updateRecordStatus.mock.calls.length).toBe(1);
+    });
+  });
+
 });

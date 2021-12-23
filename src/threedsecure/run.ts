@@ -36,7 +36,22 @@ export async function run({
 
 
   async function pendingAuthentication(threeDSecureToken: ThreeDSecureToken, threeDSecureInformation: ThreeDSecureInformation) {
-    const jwt = await cardinal.validatePayment(threeDSecureInformation);
+    const {jwt, actionCode} = await Promise.race([
+      new Promise<any>((resolve, reject) => {
+        setTimeout(() => {
+          if (!actionCode) {
+            ws.updateRecordStatus('TIMEOUT', threeDSecureToken.paymentId);
+          }
+          reject(new Error('Waited too much for payment validation'));
+        }, 60000);
+      }),
+      await cardinal.validatePayment(threeDSecureInformation, threeDSecureToken),
+    ]);
+
+    if (actionCode && actionCode != 'SUCCESS') {
+      await ws.updateRecordStatus(actionCode, threeDSecureToken.paymentId);
+      throw new Error('AUTHENTICATION_FAILED');
+    }
     return buildThreeDSecureResponse(
       await ws.authenticationResults(threeDSecureToken, orderInformation, paymentInformation, getAuthenticationTransactionId(threeDSecureInformation), jwt)
     );
