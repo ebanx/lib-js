@@ -1,7 +1,7 @@
-import { ThreeDSecureInformation } from '../types';
+import { ThreeDSecureInformation, ThreeDSecureToken } from '../types';
 import { getAscUrl, getPareq, getAuthenticationTransactionId, ThreeDSecureError } from '../three-d-secure-information';
 
-export function validatePayment(threeDSecureInformation: ThreeDSecureInformation): Promise<string> {
+export function validatePayment(threeDSecureInformation: ThreeDSecureInformation, threeDSecureToken: ThreeDSecureToken): Promise<any> {
   Cardinal.continue('cca', {
     AcsUrl: getAscUrl(threeDSecureInformation),
     Payload: getPareq(threeDSecureInformation),
@@ -11,13 +11,10 @@ export function validatePayment(threeDSecureInformation: ThreeDSecureInformation
     },
   });
 
-
-  return new Promise<string>((resolve, reject) => {
-    setTimeout(() => reject(new Error('Waited too much for payment validation')), 60000);
-
-    Cardinal.on('payments.validated', (decodedResponseData: unknown, jwt: string) => {
+  return new Promise<any>((resolve, reject) => {
+    Cardinal.on('payments.validated', (decodedResponseData: any, jwt: string) => {
       if (jwt) {
-        resolve(jwt);
+        resolve({jwt, actionCode: decodedResponseData.ActionCode});
       } else {
         reject(new ThreeDSecureError('Error to validate payment'));
       }
