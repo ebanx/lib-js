@@ -36,11 +36,11 @@ export async function run({
 
 
   async function pendingAuthentication(threeDSecureToken: ThreeDSecureToken, threeDSecureInformation: ThreeDSecureInformation) {
-    const {jwt, actionCode} = await Promise.race([
+    const {jwt, actionCode, errorNumber, errorMessage} = await Promise.race([
       new Promise<any>((resolve, reject) => {
         setTimeout(() => {
           if (!actionCode) {
-            ws.updateRecordStatus('TIMEOUT', threeDSecureToken.paymentId);
+            ws.updateRecordStatus('TIMEOUT', threeDSecureToken.paymentId, '0001', 'Waited too much for payment validation');
           }
           reject(new Error('Waited too much for payment validation'));
         }, 60000);
@@ -49,7 +49,7 @@ export async function run({
     ]);
 
     if (actionCode && actionCode != 'SUCCESS') {
-      await ws.updateRecordStatus(actionCode, threeDSecureToken.paymentId);
+      await ws.updateRecordStatus(actionCode, threeDSecureToken.paymentId, errorNumber, errorMessage);
       throw new Error('AUTHENTICATION_FAILED');
     }
     return buildThreeDSecureResponse(

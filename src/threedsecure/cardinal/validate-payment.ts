@@ -14,7 +14,8 @@ export function validatePayment(threeDSecureInformation: ThreeDSecureInformation
   return new Promise<any>((resolve, reject) => {
     Cardinal.on('payments.validated', (decodedResponseData: any, jwt: string) => {
       if (jwt) {
-        resolve({jwt, actionCode: decodedResponseData.ActionCode});
+        const actionCode = (!decodedResponseData.ActionCode && decodedResponseData.ErrorNumber != 0 ) ? 'ERROR' : 'SUCCESS';
+        resolve({jwt, errorNumber: decodedResponseData.ErrorNumber, errorMessage: decodedResponseData.ErrorDescription, actionCode: actionCode});
       } else {
         reject(new ThreeDSecureError('Error to validate payment'));
       }
