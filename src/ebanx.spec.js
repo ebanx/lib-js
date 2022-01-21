@@ -1,14 +1,17 @@
 import EBANX from './ebanx';
+import * as Console from "console";
 
 class FakeXhr {
 
  constructor() {
    this.mockResponses = [];
+   this.fakeRequests = [];
    this.alwaysCallback = console.log;
  }
 
- request() {
+ request(fakeRequest) {
    const response = this.mockResponses.shift() || [{}, {}];
+   this.fakeRequests.unshift(fakeRequest);
    setTimeout(() => {this.alwaysCallback && this.alwaysCallback(response[0], response[1]);}, 20);
 
    return this;
@@ -41,12 +44,13 @@ beforeEach(() => {
 });
 
 describe('Test Mechanism Check', () => {
- it('should intercept HTTP requests', () => {
+ it('should intercept HTTP requests', (done) => {
    EBANX.http.ajax.addFakeResponse({testData: true}, {status: 200, testXhr: true});
 
    EBANX.http.ajax.request('https://this.url.does.not.exist').always((data, xhr) => {
      expect([data, xhr])
-       .toBe([{testData: true}, {status: 200, testXhr: true}]);
+       .toStrictEqual([{testData: true}, {status: 200, testXhr: true}]);
+     done();
    });
  });
 });
@@ -62,6 +66,18 @@ describe('Device Fingerprint', () => {
    EBANX.http.ajax.addFakeResponse({ebanx_session_id: 'fakesession', providers: []}, {status: 200});
 
    EBANX.deviceFingerprint.setup((id) => { expect(id).toBe('fakession');}, () => { fail('onError called');});
+ });
+
+ it.only('should send http request to pay on fingerprint failure', (done) => {
+     EBANX.http.ajax.addFakeResponse({error: 'Unauthorized'}, {status: 401});
+     EBANX.http.ajax.addFakeResponse({}, {status: 200});
+
+     EBANX.deviceFingerprint.setup((id) => { fail('onSuccess called');}, (error) => {
+         const fingerprintErrorRequest = EBANX.http.ajax.fakeRequests.find(request => request.url.includes('fingerprint/error'));
+         expect(fingerprintErrorRequest).toBeDefined();
+         expect(fingerprintErrorRequest.data.errorMessage).toStrictEqual(error.message);
+         done();
+     })
  });
 
  it('should call onError when registering failed', () => {
