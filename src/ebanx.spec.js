@@ -113,4 +113,22 @@ describe('Utils', () => {
       expect(brand).toEqual(expectedBrand);
     });
   });
+  describe('testGetDataForPayErrors', () => {
+
+    it('returns the expected error object', () => {
+      const expectedErrorData = {
+        url: process.env.EBANX_API_SANDBOX + 'fingerprint/error',
+        method: 'post',
+        data: {
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
+          errorMessage: 'EBANX.deviceFingerprint.setup - providersList is missing'
+        }
+      };
+      const errorObject = {message: 'EBANX.deviceFingerprint.setup - providersList is missing', name: 'someErrorMessage' };
+      const payDataForError = EBANX.utils.getErrorDataForPay(errorObject);
+
+      expect(payDataForError.data.errorMessage).toEqual(expectedErrorData.data.errorMessage);
+    });
+
+  })
 });
