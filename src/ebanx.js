@@ -420,12 +420,6 @@ EBANX.utils = (function () {
         url: utilsModule.api.path() + 'fingerprint/provider',
         method: 'get'
       };
-    },
-    fingerprintErrorResource: function () {
-      return {
-        url: utilsModule.api.path() + 'fingerprint/error',
-        method: 'post'
-      }
     }
   };
 
@@ -666,42 +660,22 @@ EBANX.deviceFingerprint = {
           this.loadProvider(provider, this.saveProviderSessionList.bind(this));
         }.bind(this));
       } catch (e) {
-        this.notifyPayOnError(e);
         this.onErrorCallback(e);
       }
     }.bind(this));
   },
 
   getList: function (cb) {
-    try {
-      EBANX.http.ajax
-          .request({
-            url: EBANX.utils.api.resources.fingerPrintResource().url,
-            data: {
-              publicIntegrationKey: EBANX.config.getPublishableKey(),
-              country: EBANX.config.getCountry(),
-              origin: window.location.pathname,
-            }
-          })
-          .always(cb);
-    } catch (e) {
-      this.notifyPayOnError(e);
-    }
-  },
-
-  notifyPayOnError: function (error) {
-    var data = {
-      publicIntegrationKey: EBANX.config.getPublishableKey(),
-      errorMessage: error.message
-    };
-
-    var resource = EBANX.utils.api.resources.fingerprintErrorResource();
-
-    EBANX.http.ajax.request({
-      url: resource.url,
-      method: resource.method,
-      data: data
-    })
+    EBANX.http.ajax
+      .request({
+        url: EBANX.utils.api.resources.fingerPrintResource().url,
+        data: {
+          publicIntegrationKey: EBANX.config.getPublishableKey(),
+          country: EBANX.config.getCountry(),
+          origin: window.location.pathname,
+        }
+      })
+      .always(cb);
   },
 
   saveProviderSessionList: function (providerSession) {
